@@ -1,0 +1,25 @@
+https://cxem.net/mc/book21.php
+
+.macro del_ms  ;макрос, формирующий задержку времени в мс
+ .ifndef FREQ  ;если не объявлена константа FREQ (частота в Гц),
+  .warning "Undefined FREQ constan!" ;выдаем предупреждение и
+  .equ FREQ = 1000000 ;присваиваем по умолчание значение 1 МГц
+ .endif
+ .equ DELAY = (@0*FREQ)/4000  ;величина задания задержки времени
+ .if DELAY > 65535            ;если DELAY размером больше 2 байт, то
+  .error “Integer overflow in DELAY!” ;реализация макроса не возможна
+ .else                              
+  push XL    ;сохраняем в стеке рабочие регистры XL, XH
+  push XH
+  ldi  XH,high(DELAY) ;цикл задержки времени
+  ldi  XL,low(DELAY)
+  sbiw XH:XL,1
+  brne PC-1
+  pop  XH
+  pop  XL    ;восстанавливаем из стека рабочие регистры XH, XL
+ .endif
+.endm
+ .
+ .equ FREQ = 2000000 ;объявление тактовой частоты 2 МГц
+ .
+del_ms 25           ;формирование задержки времени в 25 мс

@@ -1,0 +1,243 @@
+
+ADC_Constant_Current.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000013c  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  00000190  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  00000190  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001c0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000028  00000000  00000000  000001fc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000698  00000000  00000000  00000224  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000005ac  00000000  00000000  000008bc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002e0  00000000  00000000  00000e68  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000034  00000000  00000000  00001148  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000381  00000000  00000000  0000117c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000089  00000000  00000000  000014fd  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000018  00000000  00000000  00001586  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 5b 00 	call	0xb6	; 0xb6 <main>
+  64:	0c 94 9c 00 	jmp	0x138	; 0x138 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <_Z5setupv>:
+#include <stdio.h>
+#include <stdlib.h>
+
+void setup()
+{
+	DDRC = 0b00011100;						// Выходы для желт.(PC2), зел.(PC3), красн.(PC4) лампочек (1)
+  6c:	8c e1       	ldi	r24, 0x1C	; 28
+  6e:	84 bb       	out	0x14, r24	; 20
+	DDRD = 0b00010000;						// PD4 - PWM
+  70:	80 e1       	ldi	r24, 0x10	; 16
+  72:	81 bb       	out	0x11, r24	; 17
+	
+	ADCSRA |= (1 << ADEN);													// Разрешаем работу АЦП (1)
+  74:	86 b1       	in	r24, 0x06	; 6
+  76:	80 68       	ori	r24, 0x80	; 128
+  78:	86 b9       	out	0x06, r24	; 6
+	ADCSRA |= (1 << ADSC);													// Запуск АЦП (1)
+  7a:	86 b1       	in	r24, 0x06	; 6
+  7c:	80 64       	ori	r24, 0x40	; 64
+  7e:	86 b9       	out	0x06, r24	; 6
+	ADCSRA |= (1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0);						// Задаю делитель N для определения частоты дискретизации f_ацп = f_цпу / N;
+  80:	86 b1       	in	r24, 0x06	; 6
+  82:	87 60       	ori	r24, 0x07	; 7
+  84:	86 b9       	out	0x06, r24	; 6
+																			// при ADPS0..2 = 111       => f_ацп = 7372800 / 128 = 57600Гц
+	ADMUX  |= (1 << REFS1)|(1 << REFS0);									// Задаю ИОН, REFS0..1 = 11 => внутренний ИОН, U_ион = 2,56В
+  86:	87 b1       	in	r24, 0x07	; 7
+  88:	80 6c       	ori	r24, 0xC0	; 192
+  8a:	87 b9       	out	0x07, r24	; 7
+	ADMUX  |= (0 << ADLAR);													// Правосторонее выравнивание ADLAR = 0; ADCH, ADCL
+  8c:	87 b1       	in	r24, 0x07	; 7
+  8e:	87 b9       	out	0x07, r24	; 7
+	ADMUX  |= (0 << MUX4)|(0 << MUX3)|(1 << MUX2)|(1 << MUX1)|(1 << MUX0);  // Выбор пина АЦП; MX0..4 = 00111 => ADC7(PA7);
+  90:	87 b1       	in	r24, 0x07	; 7
+  92:	87 60       	ori	r24, 0x07	; 7
+  94:	87 b9       	out	0x07, r24	; 7
+	
+	
+	sei();
+  96:	78 94       	sei
+	TCCR1A |= (0 << COM1A1)|(0 << COM1A0)|(1 << COM1B1)|(0 << COM1B0)|(0 << FOC1A)|(0 << FOC1B)|(0 << WGM11)|(0 << WGM10);
+  98:	8f b5       	in	r24, 0x2f	; 47
+  9a:	80 62       	ori	r24, 0x20	; 32
+  9c:	8f bd       	out	0x2f, r24	; 47
+	TCCR1B |= (0 << ICNC1) |(0 << ICES1) |(1 << WGM13) |(0 << WGM12) |(0 << CS12) |(0 << CS11) |(1 << CS10);
+  9e:	8e b5       	in	r24, 0x2e	; 46
+  a0:	81 61       	ori	r24, 0x11	; 17
+  a2:	8e bd       	out	0x2e, r24	; 46
+	ICR1 = 255;					// Верхнее значение, до которого идет счет
+  a4:	8f ef       	ldi	r24, 0xFF	; 255
+  a6:	90 e0       	ldi	r25, 0x00	; 0
+  a8:	97 bd       	out	0x27, r25	; 39
+  aa:	86 bd       	out	0x26, r24	; 38
+	OCR1B = 1;					// Регистр сравнения, при совпадении с которым меняется состояние вывода OC1B
+  ac:	81 e0       	ldi	r24, 0x01	; 1
+  ae:	90 e0       	ldi	r25, 0x00	; 0
+  b0:	99 bd       	out	0x29, r25	; 41
+  b2:	88 bd       	out	0x28, r24	; 40
+  b4:	08 95       	ret
+
+000000b6 <main>:
+}
+
+
+int main(void)
+{
+	setup();
+  b6:	0e 94 36 00 	call	0x6c	; 0x6c <_Z5setupv>
+	
+	while (1)
+	{
+		// Рестарт АЦП
+		if (ADCSRA & (1 << ADIF))							// Если флаг ADIF = 0 (т.е.ADCSRA & (1 << ADIF) = true) значит преобразование выполнилось
+  ba:	34 9b       	sbis	0x06, 4	; 6
+  bc:	06 c0       	rjmp	.+12     	; 0xca <main+0x14>
+		{
+			ADCSRA |= (1 << ADIF);							// Установка флага ADIF, чтобы позволить дальнейшую работу АЦП
+  be:	86 b1       	in	r24, 0x06	; 6
+  c0:	80 61       	ori	r24, 0x10	; 16
+  c2:	86 b9       	out	0x06, r24	; 6
+			ADCSRA |= (1 << ADSC);							// Запуск АЦП
+  c4:	86 b1       	in	r24, 0x06	; 6
+  c6:	80 64       	ori	r24, 0x40	; 64
+  c8:	86 b9       	out	0x06, r24	; 6
+		}		
+		
+		
+				
+		// Логика АЦП													(Будет держать ток 5мА(+-0,5мА) - 20(+-2)ADC
+		if (ADC < 18)										// Если на шунте напряжение меньше 45мВ(т.е. <4.5мА) - загорится желтая лампа (PC2)
+  ca:	84 b1       	in	r24, 0x04	; 4
+  cc:	95 b1       	in	r25, 0x05	; 5
+  ce:	42 97       	sbiw	r24, 0x12	; 18
+  d0:	88 f4       	brcc	.+34     	; 0xf4 <main+0x3e>
+		{
+			//PORTC = (1 << PC2)|(0 << PC3)|(0 << PC4);		// Для демонстрации включить индикацию но стабильнее работает без неё
+			if (OCR1B < ICR1)
+  d2:	28 b5       	in	r18, 0x28	; 40
+  d4:	39 b5       	in	r19, 0x29	; 41
+  d6:	86 b5       	in	r24, 0x26	; 38
+  d8:	97 b5       	in	r25, 0x27	; 39
+  da:	28 17       	cp	r18, r24
+  dc:	39 07       	cpc	r19, r25
+  de:	68 f7       	brcc	.-38     	; 0xba <main+0x4>
+			{
+				OCR1B++;
+  e0:	88 b5       	in	r24, 0x28	; 40
+  e2:	99 b5       	in	r25, 0x29	; 41
+  e4:	01 96       	adiw	r24, 0x01	; 1
+  e6:	99 bd       	out	0x29, r25	; 41
+  e8:	88 bd       	out	0x28, r24	; 40
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  ea:	82 e0       	ldi	r24, 0x02	; 2
+  ec:	8a 95       	dec	r24
+  ee:	f1 f7       	brne	.-4      	; 0xec <main+0x36>
+  f0:	00 c0       	rjmp	.+0      	; 0xf2 <main+0x3c>
+  f2:	e3 cf       	rjmp	.-58     	; 0xba <main+0x4>
+				_delay_us(1);								// В принципе задержки не нужны
+			}
+		}
+		else if	(ADC >= 18 && ADC <= 22)						// Если на шунте напр. бол. 45мВ но мен. 55мВ (>4,5 но <5,5 мА) - загорится зеленая лампа (PC3)
+  f4:	84 b1       	in	r24, 0x04	; 4
+  f6:	95 b1       	in	r25, 0x05	; 5
+  f8:	42 97       	sbiw	r24, 0x12	; 18
+  fa:	30 f0       	brcs	.+12     	; 0x108 <main+0x52>
+  fc:	84 b1       	in	r24, 0x04	; 4
+  fe:	95 b1       	in	r25, 0x05	; 5
+ 100:	47 97       	sbiw	r24, 0x17	; 23
+ 102:	20 f0       	brcs	.+8      	; 0x10c <main+0x56>
+ 104:	80 e0       	ldi	r24, 0x00	; 0
+ 106:	03 c0       	rjmp	.+6      	; 0x10e <main+0x58>
+ 108:	80 e0       	ldi	r24, 0x00	; 0
+ 10a:	01 c0       	rjmp	.+2      	; 0x10e <main+0x58>
+ 10c:	81 e0       	ldi	r24, 0x01	; 1
+ 10e:	88 23       	and	r24, r24
+ 110:	29 f0       	breq	.+10     	; 0x11c <main+0x66>
+ 112:	88 e1       	ldi	r24, 0x18	; 24
+ 114:	8a 95       	dec	r24
+ 116:	f1 f7       	brne	.-4      	; 0x114 <main+0x5e>
+ 118:	00 c0       	rjmp	.+0      	; 0x11a <main+0x64>
+ 11a:	cf cf       	rjmp	.-98     	; 0xba <main+0x4>
+			_delay_us(10);
+		}
+		else												// Если >55мВ (>5.5мА) - загорится красная лампа (PC4)
+		{
+			//PORTC = (0 << PC2)|(0 << PC3)|(1 << PC4);
+			if (OCR1B != 0)
+ 11c:	88 b5       	in	r24, 0x28	; 40
+ 11e:	99 b5       	in	r25, 0x29	; 41
+ 120:	89 2b       	or	r24, r25
+ 122:	59 f2       	breq	.-106    	; 0xba <main+0x4>
+			{
+				OCR1B--;
+ 124:	88 b5       	in	r24, 0x28	; 40
+ 126:	99 b5       	in	r25, 0x29	; 41
+ 128:	01 97       	sbiw	r24, 0x01	; 1
+ 12a:	99 bd       	out	0x29, r25	; 41
+ 12c:	88 bd       	out	0x28, r24	; 40
+ 12e:	82 e0       	ldi	r24, 0x02	; 2
+ 130:	8a 95       	dec	r24
+ 132:	f1 f7       	brne	.-4      	; 0x130 <main+0x7a>
+ 134:	00 c0       	rjmp	.+0      	; 0x136 <main+0x80>
+ 136:	c1 cf       	rjmp	.-126    	; 0xba <main+0x4>
+
+00000138 <_exit>:
+ 138:	f8 94       	cli
+
+0000013a <__stop_program>:
+ 13a:	ff cf       	rjmp	.-2      	; 0x13a <__stop_program>

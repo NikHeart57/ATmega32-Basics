@@ -1,0 +1,106 @@
+							; Директива ".INCLUDE" - подключение заголовочных файлов
+.INCLUDE	"m32def.inc"		; Подключен заголовочный файл в котором хранятся адреса и символические имена регистров (типа: PORTA, DDRA, TIMSK и т.д.)							
+							; Директива ".DEF" - Присвоение символического имени регистру		
+.DEF		temp1 = r16			; Присвоение символического имени регистру r16 
+.DEF		temp2 = r17			; Присвоение символического имени регистру r17
+.DEF		temp3 = r18			; Присвоение символического имени регистру r18
+.DEF		temp4 = r19			; Присвоение символического имени регистру r18
+.DEF		null = r25			; Присвоение символического имени регистру r25	*Для справки: у AtMega32 регистры общего назначения - r16-r25								
+							; Директива ".DSEG" - Начало сегмента данных
+.DSEG							; Директива ".BYTE" - резервирует байты в ОЗУ (доступны адреса: $0060 - $085F)
+.ORG		$0060				; Директива .ORG устанавливает счётчик положения равным заданной величине, которая передаётся как параметр
+Counter30:	.BYTE 1				; зарезервирован 1 байт для Counter30 по адресу	$0060
+.ORG		$0061
+Second:		.BYTE 1				; зарезервирован 1 байт для Second по адресу	$0061
+.ORG		$0062
+Minute:		.BYTE 1				; зарезервирован 1 байт для Minute по адресу	$0062
+.ORG		$0063
+Hour:		.BYTE 1				; зарезервирован 1 байт для Hour по адресу		$0063
+
+.CSEG						; Директива ".CSEG" - Начало програмного сегмента (кода)
+.ORG		$000				; Директива ".ORG" - Начальное значение для адресации. // Адрес вектора прерывания Reset (Вектор номер - 1, адрес - $000, название - RESET, символическое имя - RESET)
+	JMP		RESET				; (Обязательно JMP(RJMP - все ломает) Данная команда будет размещена по адресу $000 
+.ORG		$014				; Адрес вектора прерывания TIM0_COMP - (Вектор номер - 11, адрес - $014, название - TIMER0 COMP, символическое имя - TIM0_COMP)
+	JMP		TIM0_COMP			; (Обязательно JMP(RJMP - все ломает) Данная команда будет размещена по адресу $014
+.ORG		INT_VECTORS_SIZE    ; Конец таблицы прерываний
+
+RESET:						; Метка RESET // Начало кода вектора RESET
+	LDI		temp1,	Low(RAMEND)	; Инициализация стека - Обязательно!!!
+	OUT		SPL,	temp1		; Инициализация стека..
+	LDI		temp1,	High(RAMEND); Инициализация стека..
+	OUT		SPH,	temp1		; Инициализация стека
+
+	LDI		temp1,	0xff		; Запись числа 0xff в регистр temp1 (r16)	*(1 - выход, 0 - вход)
+	OUT		DDRC,	temp1		; Отправка значения temp1 в регистр DDRC
+
+	LDI		temp1,	(0 << FOC0) |(1 << WGM01)|(0 << WGM00)|(0 << COM01)|(1 << COM00)|(1 << CS02)|(0 << CS01)|(1 << CS00)
+	OUT		TCCR0,	temp1
+	LDI		temp1,	(1 << OCIE0)|(0 << TOIE0)
+	OUT		TIMSK,	temp1
+	LDI		temp1,	239
+	OUT		OCR0,	temp1
+	SEI							; Разрешение прерываний
+
+	LDI		null,		0		; инициализация регистра null(r25)
+	STS		Counter30,	null	; обнуление Counter30
+	STS		Second,		null	; обнуление Second
+	STS		Minute,		null	; обнуление Minute
+	STS		Hour,		null	; обнуление	Hour
+	CLR		temp1				; Очистка регистра temp1
+	JMP		Start				; Переход в программу
+
+Start:						; Начало кода программы
+	LDS		temp1, Second		; Пересылка из I/O-регистра в регистр (60 = 0b 0011 1100; 24 = 0b 0001 1000)
+	OUT		PORTC, temp1
+	JMP		Start				; Относительный переход (Повтор Start)
+
+TIM0_COMP:					; Код вектора прерываний 
+	CLI							; Запрещаем прерывания, чтобы больше никакое прерывание не вклинилось
+	PUSH	temp1				; Поместить значение регистра в стек
+	IN		temp1,	SREG		; Загрузить из пространства ввода/вывода (порты, таймеры, конфигурационные регистры и т.д.) в регистр общего назначения
+	PUSH	temp1				; Поместить значение регистра в стек
+	LDS		temp1,	Counter30	; Пересылка из I/O-регистра в регистр
+	INC		temp1				; Инкремент
+	STS		Counter30, temp1	; Прямое сохранение (в ОЗУ)
+	CPI		temp1, 30			; если temp1 >= 30
+	BRSH	INC_Second
+	INC_Second_Ret:				; Работа с PORTC в подпрограмме(ах)
+	POP		temp1				; Извлечь значение регистра из стека
+	OUT		SREG,	temp1		; Вывод в пространство ввода/вывода
+	POP		temp1				; Извлечь значение регистра из стека
+	SEI							; Разрешение прерываний
+	RETI						; Возврат из прерывания
+
+INC_Second:
+	STS		Counter30, null		; обнуление Counter30
+	LDS		temp2,	Second		; выгрузка Second
+	INC		temp2				; инкремент Second
+	CPI		temp2, 60			; сравнение Second и 60
+	BRSH	INC_Minute			; если Second >= 60 то вызовется подпрограмма обнуления Second и инкремента Minute
+	STS		Second, temp2		; загрузка Second (< 60)
+	INC_Minute_Ret:				; если возврат из подпрограммы то значение Second = 0
+	JMP		INC_Second_Ret		; возврат в прерывание
+
+INC_Minute:
+	STS		Second, null		; обнуление Second
+	LDS		temp3,	Minute		; выгрузка Minute
+	INC		temp3				; инкремент Minute
+	CPI		temp3, 60			; сравнение Minute и 60
+	BRSH	INC_Hour
+	STS		Minute, temp3		; загрузка Minute (< 60)
+	INC_Hour_Ret:
+	JMP		INC_Minute_Ret
+
+INC_Hour:
+	STS		Minute, null		; обнуление Minute
+	LDS		temp4,	Hour		; выгрузка Hour
+	INC		temp4				; инкремент Hour
+	CPI		temp4, 24			; сравнение Hour и 24
+	BRSH	Null_Hour
+	STS		Hour, temp4		; загрузка Hour (< 24)
+	Null_Hour_Ret:
+	JMP		INC_Hour_Ret
+
+Null_Hour:
+	STS		Hour, null
+	JMP		Null_Hour_Ret

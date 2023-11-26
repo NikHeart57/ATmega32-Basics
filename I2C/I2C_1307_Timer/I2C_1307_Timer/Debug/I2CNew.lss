@@ -1,0 +1,344 @@
+
+I2CNew.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000001aa  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000021e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000007  00800060  00800060  0000021e  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  0000021e  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000250  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000088  00000000  00000000  0000028c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   0000091f  00000000  00000000  00000314  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000059f  00000000  00000000  00000c33  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000003af  00000000  00000000  000011d2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000000f4  00000000  00000000  00001584  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000004b8  00000000  00000000  00001678  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000000a8  00000000  00000000  00001b30  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000078  00000000  00000000  00001bd8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   8:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  10:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  14:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  18:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  1c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  20:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  24:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  28:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  2c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  30:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  34:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  38:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  3c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  40:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  44:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  48:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  4c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  50:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_clear_bss>:
+  60:	20 e0       	ldi	r18, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	01 c0       	rjmp	.+2      	; 0x6a <.do_clear_bss_start>
+
+00000068 <.do_clear_bss_loop>:
+  68:	1d 92       	st	X+, r1
+
+0000006a <.do_clear_bss_start>:
+  6a:	a7 36       	cpi	r26, 0x67	; 103
+  6c:	b2 07       	cpc	r27, r18
+  6e:	e1 f7       	brne	.-8      	; 0x68 <.do_clear_bss_loop>
+  70:	0e 94 c9 00 	call	0x192	; 0x192 <main>
+  74:	0c 94 d3 00 	jmp	0x1a6	; 0x1a6 <_exit>
+
+00000078 <__bad_interrupt>:
+  78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000007c <_Z11i2c_MT_initv>:
+
+//====================== Master Trasmitter ======================
+
+void i2c_MT_init(void)
+{
+	TWBR = 66;										// Р—Р°РґР°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ СЃРѕРµРґРёРЅРµРЅРёСЏ. Р§РµРј Р±РѕР»СЊС€Рµ С‚РµРј РјРµРґР»РµРЅРЅРµРµ; 255 -> 28РєР±РёС‚/СЃ; 66 -> 100РєР±РёС‚/СЃ
+  7c:	82 e4       	ldi	r24, 0x42	; 66
+  7e:	80 b9       	out	0x00, r24	; 0
+	TWSR |= (0 << TWPS1)|(0 << TWPS0);				// РђРЅР°Р»РѕРіРёС‡РЅРѕ (00 - 11)
+  80:	81 b1       	in	r24, 0x01	; 1
+  82:	81 b9       	out	0x01, r24	; 1
+  84:	08 95       	ret
+
+00000086 <_Z12i2c_MT_startv>:
+}
+
+void i2c_MT_start(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWSTA)|(1 << TWEN);	// Send START condition
+  86:	84 ea       	ldi	r24, 0xA4	; 164
+  88:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					// Wait for TWINT Flag set. This indicates that the START condition has been transmitted
+  8a:	06 b6       	in	r0, 0x36	; 54
+  8c:	07 fe       	sbrs	r0, 7
+  8e:	fd cf       	rjmp	.-6      	; 0x8a <_Z12i2c_MT_startv+0x4>
+}
+  90:	08 95       	ret
+
+00000092 <_Z11i2c_MT_sendc>:
+
+void i2c_MT_send(char data)
+{
+	TWDR = data;									// Load data into TWDR Register.
+  92:	83 b9       	out	0x03, r24	; 3
+	TWCR = (1 << TWINT)|(1 << TWEN);				// Clear TWINT bit in TWCR to start transmission of data
+  94:	84 e8       	ldi	r24, 0x84	; 132
+  96:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					// РѕР¶РёРґР°РЅРёРµ Р·Р°РІРµСЂС€РµРЅРёСЏ РѕРїРµСЂР°С†РёРё
+  98:	06 b6       	in	r0, 0x36	; 54
+  9a:	07 fe       	sbrs	r0, 7
+  9c:	fd cf       	rjmp	.-6      	; 0x98 <_Z11i2c_MT_sendc+0x6>
+}
+  9e:	08 95       	ret
+
+000000a0 <_Z11i2c_MT_stopv>:
+
+void i2c_MT_stop(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWEN)|(1 << TWSTO);	// Transmit STOP condition
+  a0:	84 e9       	ldi	r24, 0x94	; 148
+  a2:	86 bf       	out	0x36, r24	; 54
+  a4:	08 95       	ret
+
+000000a6 <_Z11i2c_MR_initv>:
+
+//====================== Master Reciever ======================	
+
+void i2c_MR_init(void)
+{
+	TWBR = 66;										// Р—Р°РґР°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ СЃРѕРµРґРёРЅРµРЅРёСЏ. Р§РµРј Р±РѕР»СЊС€Рµ С‚РµРј РјРµРґР»РµРЅРЅРµРµ; 255 -> 28РєР±РёС‚/СЃ; 66 -> 100РєР±РёС‚/СЃ
+  a6:	82 e4       	ldi	r24, 0x42	; 66
+  a8:	80 b9       	out	0x00, r24	; 0
+	TWSR |= (0 << TWPS1)|(0 << TWPS0);				// РђРЅР°Р»РѕРіРёС‡РЅРѕ (00 - 11)
+  aa:	81 b1       	in	r24, 0x01	; 1
+  ac:	81 b9       	out	0x01, r24	; 1
+  ae:	08 95       	ret
+
+000000b0 <_Z12i2c_MR_startv>:
+}
+
+void i2c_MR_start(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWSTA)|(1 << TWEN);	// Send START condition
+  b0:	84 ea       	ldi	r24, 0xA4	; 164
+  b2:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					// Wait for TWINT Flag set. This indicates that the START condition has been transmitted
+  b4:	06 b6       	in	r0, 0x36	; 54
+  b6:	07 fe       	sbrs	r0, 7
+  b8:	fd cf       	rjmp	.-6      	; 0xb4 <_Z12i2c_MR_startv+0x4>
+}
+  ba:	08 95       	ret
+
+000000bc <_Z11i2c_MR_sendc>:
+
+void i2c_MR_send(char data)
+{
+	TWDR = data;									// Load data into TWDR Register.
+  bc:	83 b9       	out	0x03, r24	; 3
+	TWCR = (1 << TWINT)|(1 << TWEN);				// Clear TWINT bit in TWCR to start transmission of data
+  be:	84 e8       	ldi	r24, 0x84	; 132
+  c0:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					// РѕР¶РёРґР°РЅРёРµ Р·Р°РІРµСЂС€РµРЅРёСЏ РѕРїРµСЂР°С†РёРё
+  c2:	06 b6       	in	r0, 0x36	; 54
+  c4:	07 fe       	sbrs	r0, 7
+  c6:	fd cf       	rjmp	.-6      	; 0xc2 <_Z11i2c_MR_sendc+0x6>
+}
+  c8:	08 95       	ret
+
+000000ca <_Z11i2c_MR_Readv>:
+
+unsigned char i2c_MR_Read(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWEN)|(1 << TWEA);
+  ca:	84 ec       	ldi	r24, 0xC4	; 196
+  cc:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					//РѕР¶РёРґР°РЅРёРµ СѓСЃС‚Р°РЅРѕРІРєРё Р±РёС‚Р° TWIN
+  ce:	06 b6       	in	r0, 0x36	; 54
+  d0:	07 fe       	sbrs	r0, 7
+  d2:	fd cf       	rjmp	.-6      	; 0xce <_Z11i2c_MR_Readv+0x4>
+	return TWDR;									//С‡РёС‚Р°РµРј СЂРµРіРёСЃС‚СЂ РґР°РЅРЅС‹С…
+  d4:	83 b1       	in	r24, 0x03	; 3
+}
+  d6:	08 95       	ret
+
+000000d8 <_Z15i2c_MR_ReadLastv>:
+
+unsigned char i2c_MR_ReadLast(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWEN);
+  d8:	84 e8       	ldi	r24, 0x84	; 132
+  da:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1 << TWINT)));					//РѕР¶РёРґР°РЅРёРµ СѓСЃС‚Р°РЅРѕРІРєРё Р±РёС‚Р° TWIN
+  dc:	06 b6       	in	r0, 0x36	; 54
+  de:	07 fe       	sbrs	r0, 7
+  e0:	fd cf       	rjmp	.-6      	; 0xdc <_Z15i2c_MR_ReadLastv+0x4>
+	return TWDR;									//С‡РёС‚Р°РµРј СЂРµРіРёСЃС‚СЂ РґР°РЅРЅС‹С…
+  e2:	83 b1       	in	r24, 0x03	; 3
+}
+  e4:	08 95       	ret
+
+000000e6 <_Z11i2c_MR_stopv>:
+
+void i2c_MR_stop(void)
+{
+	TWCR = (1 << TWINT)|(1 << TWEN)|(1 << TWSTO);	// Transmit STOP condition
+  e6:	84 e9       	ldi	r24, 0x94	; 148
+  e8:	86 bf       	out	0x36, r24	; 54
+  ea:	08 95       	ret
+
+000000ec <_Z5Writev>:
+{
+	// Адрес МК						0b10101010
+	// Адрес часов слейв запись W	0b11010000
+	// Адрес часов слейв чтение	R	0b11010001
+	
+	i2c_MT_init();					// Инициализация мастера				// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+  ec:	0e 94 3e 00 	call	0x7c	; 0x7c <_Z11i2c_MT_initv>
+	i2c_MT_start();					// Задание стартового условия мастером	// 00001 = 0x08 - A START condition has been transmitted
+  f0:	0e 94 43 00 	call	0x86	; 0x86 <_Z12i2c_MT_startv>
+	i2c_MT_send(0b11010000);		// Передача адреса						// 00011 = 0x18 - SLA+W has been transmitted;		ACK has been received
+  f4:	80 ed       	ldi	r24, 0xD0	; 208
+  f6:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0x00);				// Передача данных(адреса записи)		// 00101 = 0x28 - Data byte has been transmitted;	ACK has been received
+  fa:	80 e0       	ldi	r24, 0x00	; 0
+  fc:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	// Передача данных DATA					// 00101 = 0x28 - Data byte has been transmitted;	ACK has been received
+	i2c_MT_send(0b00000000);		// 0x00	7-CH	6-10Sec		5-10Sec		4-10Sec		3-Sec	2-Sec	1-Sec	0-Sec	(CH-0 - вкл осцилятор, CH-1 - вЫкл осцилятор)
+ 100:	80 e0       	ldi	r24, 0x00	; 0
+ 102:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x01	7-0		6-10Min		5-10Min		4-10Min		3-Min	2-Min	1-Min	0-Min
+ 106:	80 e0       	ldi	r24, 0x00	; 0
+ 108:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x02	7-0		6-12/24		5-10H/AMPM	4-10Hour	3-Hour	2-Hour	1-Hour	0-Hour
+ 10c:	80 e0       	ldi	r24, 0x00	; 0
+ 10e:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x03	7-0		6-0			5-0			4-0			3-0		2-Day	1-Day	0-Day	(День недели)
+ 112:	80 e0       	ldi	r24, 0x00	; 0
+ 114:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x04	7-0		6-0			5-10Date	4-10Date	3-Date	2-Date	1-Date	0-Date	(День месяца)
+ 118:	80 e0       	ldi	r24, 0x00	; 0
+ 11a:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x05	7-0		6-0			5-0			4-10Month	3-Month	2-Month	1-Month	0-Month
+ 11e:	80 e0       	ldi	r24, 0x00	; 0
+ 120:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00000000);		// 0x06	7-10Y	6-10Y		5-10Y		4-10Y		3-Y		2-Y		1-Y		0-Y
+ 124:	80 e0       	ldi	r24, 0x00	; 0
+ 126:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	i2c_MT_send(0b00010000);		// 0x07	7-OUT	6-0			5-0			4-SQWE		3-0		2-0		1-RS1	0-RS0	(OUT - логика на выходе; SQWE - генератор на выходе; RS1..0 - прескелереры частоты генератора SQWE)
+ 12a:	80 e1       	ldi	r24, 0x10	; 16
+ 12c:	0e 94 49 00 	call	0x92	; 0x92 <_Z11i2c_MT_sendc>
+	
+	i2c_MT_stop();					// Стоп от мастера						// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+ 130:	0e 94 50 00 	call	0xa0	; 0xa0 <_Z11i2c_MT_stopv>
+ 134:	08 95       	ret
+
+00000136 <_Z4Readv>:
+	// Адрес МК						0b10101010
+	// Адрес часов слейв запись		0b11010000
+	// Адрес часов слейв чтение		0b11010001
+	
+	// ===== Чтение с указанием стартового адреса с которого начинается чтение =====
+	i2c_MR_init();					// Инициализация мастера				// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+ 136:	0e 94 53 00 	call	0xa6	; 0xa6 <_Z11i2c_MR_initv>
+	i2c_MR_start();					// Задание стартового условия мастером	// 00001 = 0x08 - A START condition has been transmitted
+ 13a:	0e 94 58 00 	call	0xb0	; 0xb0 <_Z12i2c_MR_startv>
+	i2c_MR_send(0b11010000);		// Передача адреса слэйва
+ 13e:	80 ed       	ldi	r24, 0xD0	; 208
+ 140:	0e 94 5e 00 	call	0xbc	; 0xbc <_Z11i2c_MR_sendc>
+	i2c_MR_send(0x00);				// Передача адреса ячейки
+ 144:	80 e0       	ldi	r24, 0x00	; 0
+ 146:	0e 94 5e 00 	call	0xbc	; 0xbc <_Z11i2c_MR_sendc>
+	i2c_MR_start();					// Повторный старт
+ 14a:	0e 94 58 00 	call	0xb0	; 0xb0 <_Z12i2c_MR_startv>
+	i2c_MR_send(0b11010001);		// Отправка адреса слэйва				// 01000 = 0x40 - SLA+R has been transmitted;	ACK has been received
+ 14e:	81 ed       	ldi	r24, 0xD1	; 209
+ 150:	0e 94 5e 00 	call	0xbc	; 0xbc <_Z11i2c_MR_sendc>
+
+	sec		= i2c_MR_Read();		// Чтение данных   ACK					// 01010 = Data byte has been received;			ACK has been returned
+ 154:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 158:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <sec>
+	min		= i2c_MR_Read();
+ 15c:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 160:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <min>
+	hour	= i2c_MR_Read();
+ 164:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 168:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <hour>
+	day		= i2c_MR_Read();
+ 16c:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 170:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <day>
+	date	= i2c_MR_Read();
+ 174:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 178:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <date>
+	month	= i2c_MR_Read();
+ 17c:	0e 94 65 00 	call	0xca	; 0xca <_Z11i2c_MR_Readv>
+ 180:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <month>
+	year	= i2c_MR_ReadLast();	// Чтение данных NOACK					// 01011 = 0x58 - Data byte has been received;	NOT ACK has been returned
+ 184:	0e 94 6c 00 	call	0xd8	; 0xd8 <_Z15i2c_MR_ReadLastv>
+ 188:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__DATA_REGION_ORIGIN__>
+	
+	i2c_MR_stop();					// Стоп от мастера						// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+ 18c:	0e 94 73 00 	call	0xe6	; 0xe6 <_Z11i2c_MR_stopv>
+ 190:	08 95       	ret
+
+00000192 <main>:
+void Write(void);
+
+
+int main(void)
+{
+	Write();
+ 192:	0e 94 76 00 	call	0xec	; 0xec <_Z5Writev>
+	
+	DDRA = 0xff;
+ 196:	8f ef       	ldi	r24, 0xFF	; 255
+ 198:	8a bb       	out	0x1a, r24	; 26
+	while(1)
+	{
+		Read();
+ 19a:	0e 94 9b 00 	call	0x136	; 0x136 <_Z4Readv>
+		PORTA = sec;
+ 19e:	80 91 66 00 	lds	r24, 0x0066	; 0x800066 <sec>
+ 1a2:	8b bb       	out	0x1b, r24	; 27
+ 1a4:	fa cf       	rjmp	.-12     	; 0x19a <main+0x8>
+
+000001a6 <_exit>:
+ 1a6:	f8 94       	cli
+
+000001a8 <__stop_program>:
+ 1a8:	ff cf       	rjmp	.-2      	; 0x1a8 <__stop_program>
