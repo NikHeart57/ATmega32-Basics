@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "i2c.h"
+#include "i2c.cpp"
 #include "ssd1306.cpp"
 
 #endif /* MAIN_H_ */
