@@ -152,23 +152,95 @@ class ssd1306_Display
 		i2c_MT_stop();		
 	}
 	
+	
 	void Buffer_SetPixel(int x, int y)
 	{
-		if ((y - Yshift) < 8) 
+		if ((y - (float)Yshift) < 8) 
 		{
 			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift)	    ] |= (1 << ((y - Yshift) % 8));
 		}
-		else if ((y - Yshift) < 16)
+		else if ((y - (float)Yshift) < 16)
 		{
 			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 256] |= (1 << ((y - Yshift) % 8));
 		}
-		else if ((y - Yshift) < 24)
+		else if ((y - (float)Yshift) < 24)
 		{
 			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 512] |= (1 << ((y - Yshift) % 8));
 		}
-		else if ((y - Yshift) < 32)
+		else if ((y - (float)Yshift) < 32)
 		{
 			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 768] |= (1 << ((y - Yshift) % 8));
 		}		
+	}
+	
+	void Buffer_RemovePixel(int x, int y)
+	{
+		if ((y - (float)Yshift) < 8)
+		{
+			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift)	    ] &= ~(1 << ((y - Yshift) % 8));
+		}
+		else if ((y - (float)Yshift) < 16)
+		{
+			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 256] &= ~(1 << ((y - Yshift) % 8));
+		}
+		else if ((y - (float)Yshift) < 24)
+		{
+			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 512] &= ~(1 << ((y - Yshift) % 8));
+		}
+		else if ((y - (float)Yshift) < 32)
+		{
+			Buffer[(int)((((-y + Yshift) / 8) * 128) + x + Xshift) + 768] &= ~(1 << ((y - Yshift) % 8));
+		}
+	}	
+
+		
+	void Buffer_SetLine(float xa, float ya, float xb, float yb)
+	{
+		
+		//////////////////////////////////////////////////////////////////////////
+		// Особый случай если линия вертикальная
+		if (xa == xb)
+		{
+			if (yb <= ya)
+			{
+				int ytemp = ya;
+				ya = yb;
+				yb = ytemp;
+			}
+			
+			int x = xa;
+			
+			for (int y = ya; y < yb; y++)
+			{
+				Buffer_SetPixel(x, y);
+			}
+			
+			return;
+		}
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		// Особый случай если xa > xb - тогда надо переставить их местами
+		if (xb < xa)
+		{
+			float xtemp;
+			float ytemp;
+			
+			xtemp = xa;
+			xa = xb;
+			xb = xtemp;
+			
+			ytemp = ya;
+			ya = yb;
+			yb = ytemp;
+		}
+		
+		// Собственно функция
+		for(float x = xa; x <= xb; x += 0.5)
+		{
+			float temp = ((x - 1) - xa)*(yb - ya) + ya*(xb - xa);		// Без temp почему-то не работает. Не получается сделать одну функцию, пришлось разбить на 2
+			int y = temp / (xb - xa) + 0.9;								// -1 и +0.9 - Эмперические поправки, с ними картинка болеее симетричная относительно центра
+			Buffer_SetPixel(x, y);
+		}
 	}
 };
