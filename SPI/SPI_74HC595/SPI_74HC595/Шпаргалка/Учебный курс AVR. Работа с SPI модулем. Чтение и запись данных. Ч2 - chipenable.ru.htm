@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#" lang="ru-ru" dir="ltr">
+<head>
+    <meta name="yandex-verification" content="de91c9c699e7707f" />
+	<meta name="google-site-verification" content="7kqNnA9aQ4iHfZF4ZkhMeggHfirbU-2EuYbpMA-qIic" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta charset="utf-8" />
+	<base href="https://chipenable.ru/index.php/programming-avr/138-avr-spi-module-part2.html" />
+	<meta name="keywords" content="spi, avr, интерфейс" />
+	<meta name="title" content="Учебный курс AVR. Работа с SPI модулем. Чтение и запись данных. Ч2" />
+	<meta name="author" content="Павел Бобков" />
+	<meta property="og:url" content="https://chipenable.ru/index.php/programming-avr/138-avr-spi-module-part2.html" />
+	<meta property="og:title" content="Учебный курс AVR. Работа с SPI модулем. Чтение и запись данных. Ч2 - chipenable.ru" />
+	<meta property="og:type" content="article" />
+	<meta property="og:description" content="   Теперь вы имеете общее представление о последовательном периферийном интерфейсе и можно перейти к рассмотрению SPI модуля. 
+   SPI модуль микроконтроллера AVR atmega16 использует для своей работы 4 вывода - MOSI, MISO, SCK и SS. Когда модуль не задействован, эти выводы являются линиями портов ввода/вывода общего назначения. Когда модуль включен, режим работы этих выводов переопределяются." />
+	<meta name="description" content="   Теперь вы имеете общее представление о последовательном периферийном интерфейсе и можно перейти к рассмотрению SPI модуля. 
+   SPI модуль микроконтроллера AVR atmega16 использует для своей работы 4 вывода - MOSI, MISO, SCK и SS. Когда модуль не задействован, эти выводы являются линиями портов ввода/вывода общего назначения. Когда модуль включен, режим работы этих выводов переопределяются." />
+	<meta name="generator" content="Joomla! - Open Source Content Management" />
+	<title>Учебный курс AVR. Работа с SPI модулем. Чтение и запись данных. Ч2 - chipenable.ru</title>
+	<link href="/index.php/component/jcomments/feed/com_k2/138.html" rel="alternate" type="application/rss+xml" title="Учебный курс AVR. Работа с SPI модулем. Чтение и запись данных. Ч2" />
+	<link href="/templates/protostar/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet" />
+	<link href="/templates/protostar/css/k2.css?v=2.8.0" rel="stylesheet" />
+	<link href="/components/com_jcomments/tpl/default/style.css?v=3002" rel="stylesheet" />
+	<link href="/templates/protostar/css/template.css?b86ef0a180376b48bd35fb330f634c4e" rel="stylesheet" />
+	<style>
+
+						/* K2 - Magnific Popup Overrides */
+						.mfp-iframe-holder {padding:10px;}
+						.mfp-iframe-holder .mfp-content {max-width:100%;width:100%;height:100%;}
+						.mfp-iframe-scaler iframe {background:#fff;padding:10px;box-sizing:border-box;box-shadow:none;}
+					
+	body.site {
+		border-top: 3px solid #686c47;
+		background-color: #e6e6e6;
+	}
+	a {
+		color: #686c47;
+	}
+	.nav-list > .active > a,
+	.nav-list > .active > a:hover,
+	.dropdown-menu li > a:hover,
+	.dropdown-menu .active > a,
+	.dropdown-menu .active > a:hover,
+	.nav-pills > .active > a,
+	.nav-pills > .active > a:hover,
+	.btn-primary {
+		background: #686c47;
+	}
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+	<script src="/media/k2/assets/js/k2.frontend.js?v=2.8.0&amp;sitepath=/"></script>
+	<script src="/components/com_jcomments/js/jcomments-v2.3.js?v=12"></script>
+	<script src="/components/com_jcomments/libraries/joomlatune/ajax.js?v=4"></script>
+	<script src="/media/jui/js/jquery.min.js?b86ef0a180376b48bd35fb330f634c4e"></script>
+	<script src="/media/jui/js/jquery-noconflict.js?b86ef0a180376b48bd35fb330f634c4e"></script>
+	<script src="/media/jui/js/jquery-migrate.min.js?b86ef0a180376b48bd35fb330f634c4e"></script>
+	<script src="/media/jui/js/bootstrap.min.js?b86ef0a180376b48bd35fb330f634c4e"></script>
+	<script src="/templates/protostar/js/template.js?b86ef0a180376b48bd35fb330f634c4e"></script>
+	<!--[if lt IE 9]><script src="/media/jui/js/html5.js?b86ef0a180376b48bd35fb330f634c4e"></script><![endif]-->
+
+	
+	<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter280534 = new Ya.Metrika({ id:280534, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/280534" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9866788192129816"
+     crossorigin="anonymous"></script>	
+</head>
+<body class="site com_k2 view-item no-layout no-task itemid-127">
+	<!-- Body -->
+	<div class="body" id="top">
+		<div class="container">
+			<!-- Header -->
+			<header class="header" role="banner">
+				<div class="header-inner clearfix">
+					<a class="brand pull-left" href="/">
+						<img src="https://chipenable.ru/images/headers/Header.jpg" alt="chipenable.ru" />											</a>
+					<div class="header-search pull-right">
+						
+					</div>
+				</div>
+			</header>
+						
+			<div class="row-fluid">
+									<!-- Begin Sidebar -->
+					<div id="sidebar" class="span3">
+						<div class="sidebar-nav">
+							<div class="well _menu"><h3 class="page-header">Разделы</h3><ul class="nav menu">
+<li class="item-136"><a href="/index.php/novosti.html" >Новости</a></li><li class="item-137"><a href="/index.php/embedded-programming.html" >Встраиваемые системы</a></li><li class="item-127 current active"><a href="/index.php/programming-avr.html" >Программирование AVR</a></li><li class="item-128"><a href="/index.php/programmirovanie-arm.html" >Программирование ARM</a></li><li class="item-129"><a href="/index.php/instruments-technologies.html" >Инструменты/технологии</a></li><li class="item-130"><a href="/index.php/how-connection.html" >Как подключить</a></li><li class="item-131"><a href="/index.php/electronic-components.html" >Компоненты</a></li><li class="item-132"><a href="/index.php/rtos.html" >RTOS</a></li><li class="item-133"><a href="/index.php/iar-embedded-workbench.html" >Софт</a></li><li class="item-134"><a href="/index.php/projects-avr.html" >Проекты</a></li><li class="item-135"><a href="/index.php/links.html" >Ссылки</a></li></ul>
+</div><div class="well "><div class="bannergroup">
+
+	<div class="banneritem">
+										<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- test3 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:160px;height:600px"
+     data-ad-client="ca-pub-9866788192129816"
+     data-ad-slot="2709976180"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>				<div class="clr"></div>
+	</div>
+
+</div>
+</div><div class="well ">
+<div id="k2ModuleBox89" class="k2TagCloudBlock">
+			<a href="/index.php/programming-avr/tag/1wire.html" style="font-size:91%" title="5 items tagged with 1wire">
+		1wire	</a>
+				<a href="/index.php/programming-avr/tag/arm.html" style="font-size:87%" title="4 items tagged with arm">
+		arm	</a>
+				<a href="/index.php/programming-avr/tag/avr.html" style="font-size:300%" title="58 items tagged with avr">
+		avr	</a>
+				<a href="/index.php/programming-avr/tag/avr программатор.html" style="font-size:87%" title="4 items tagged with avr программатор">
+		avr программатор	</a>
+				<a href="/index.php/programming-avr/tag/ds18b20.html" style="font-size:91%" title="5 items tagged with ds18b20">
+		ds18b20	</a>
+				<a href="/index.php/programming-avr/tag/eeprom.html" style="font-size:91%" title="5 items tagged with eeprom">
+		eeprom	</a>
+				<a href="/index.php/programming-avr/tag/i2c.html" style="font-size:95%" title="6 items tagged with i2c">
+		i2c	</a>
+				<a href="/index.php/programming-avr/tag/IAR.html" style="font-size:107%" title="9 items tagged with IAR">
+		IAR	</a>
+				<a href="/index.php/programming-avr/tag/lcd.html" style="font-size:95%" title="6 items tagged with lcd">
+		lcd	</a>
+				<a href="/index.php/programming-avr/tag/tsop.html" style="font-size:87%" title="4 items tagged with tsop">
+		tsop	</a>
+				<a href="/index.php/programming-avr/tag/twi.html" style="font-size:95%" title="6 items tagged with twi">
+		twi	</a>
+				<a href="/index.php/programming-avr/tag/алгоритмы.html" style="font-size:123%" title="13 items tagged with алгоритмы">
+		алгоритмы	</a>
+				<a href="/index.php/programming-avr/tag/библиотеки.html" style="font-size:119%" title="12 items tagged with библиотеки">
+		библиотеки	</a>
+				<a href="/index.php/programming-avr/tag/датчик.html" style="font-size:91%" title="5 items tagged with датчик">
+		датчик	</a>
+				<a href="/index.php/programming-avr/tag/драйвер.html" style="font-size:95%" title="6 items tagged with драйвер">
+		драйвер	</a>
+				<a href="/index.php/programming-avr/tag/интерфейс.html" style="font-size:111%" title="10 items tagged with интерфейс">
+		интерфейс	</a>
+				<a href="/index.php/programming-avr/tag/компоненты.html" style="font-size:95%" title="6 items tagged with компоненты">
+		компоненты	</a>
+				<a href="/index.php/programming-avr/tag/макросы.html" style="font-size:87%" title="4 items tagged with макросы">
+		макросы	</a>
+				<a href="/index.php/programming-avr/tag/оу.html" style="font-size:87%" title="4 items tagged with оу">
+		оу	</a>
+				<a href="/index.php/programming-avr/tag/программирование микроконтроллеров.html" style="font-size:87%" title="4 items tagged with программирование микроконтроллеров">
+		программирование микроконтроллеров	</a>
+				<a href="/index.php/programming-avr/tag/расчет.html" style="font-size:107%" title="9 items tagged with расчет">
+		расчет	</a>
+				<a href="/index.php/programming-avr/tag/семисегментный индикатор.html" style="font-size:87%" title="4 items tagged with семисегментный индикатор">
+		семисегментный индикатор	</a>
+				<a href="/index.php/programming-avr/tag/си.html" style="font-size:115%" title="11 items tagged with си">
+		си	</a>
+				<a href="/index.php/programming-avr/tag/событийная система.html" style="font-size:87%" title="4 items tagged with событийная система">
+		событийная система	</a>
+				<a href="/index.php/programming-avr/tag/схемотехника.html" style="font-size:127%" title="14 items tagged with схемотехника">
+		схемотехника	</a>
+				<a href="/index.php/programming-avr/tag/таймер.html" style="font-size:87%" title="4 items tagged with таймер">
+		таймер	</a>
+				<a href="/index.php/programming-avr/tag/управление.html" style="font-size:95%" title="6 items tagged with управление">
+		управление	</a>
+				<a href="/index.php/programming-avr/tag/устройства.html" style="font-size:111%" title="10 items tagged with устройства">
+		устройства	</a>
+				<a href="/index.php/programming-avr/tag/учебный курс avr.html" style="font-size:143%" title="18 items tagged with учебный курс avr">
+		учебный курс avr	</a>
+				<a href="/index.php/programming-avr/tag/шим.html" style="font-size:87%" title="4 items tagged with шим">
+		шим	</a>
+			<div class="clr"></div>
+</div>
+</div>
+						</div>
+					</div>
+					<!-- End Sidebar -->
+								<main id="content" role="main" class="span9">
+					<!-- Begin Content -->
+					
+					<div id="system-message-container">
+	</div>
+
+					
+
+<!-- Start K2 Item Layout -->
+<span id="startOfPageId138"></span>
+
+<div id="k2Container" class="itemView itemIsFeatured">
+
+	<!-- Plugins: BeforeDisplay -->
+	
+	<!-- K2 Plugins: K2BeforeDisplay -->
+	
+	<div class="itemHeader">
+
+	
+
+		<!-- Item title -->
+	<h2 class="itemTitle">
+		
+		Учебный курс AVR. Работа с SPI модулем. Чтение и запись данных. Ч2
+			</h2>
+	
+    <div style="text-align:center">
+
+				<!-- Date created -->
+		<span class="itemDateCreated">
+			22/10/2012 - 17:23		</span>
+		
+				<!-- Item Author -->
+		<span class="itemAuthor">
+									Павел Бобков					</span>
+		
+		</div>
+    </div>
+
+	<!-- Plugins: AfterDisplayTitle -->
+	
+	<!-- K2 Plugins: K2AfterDisplayTitle -->
+	
+		<div class="itemToolbar">
+		<ul>
+			
+			
+			
+			
+			
+			
+					</ul>
+		<div class="clr"></div>
+	</div>
+	
+	
+	<div class="itemBody">
+
+		<!-- Plugins: BeforeDisplayContent -->
+		
+		<!-- K2 Plugins: K2BeforeDisplayContent -->
+		
+		
+		
+		
+				<!-- Item fulltext -->
+		<div class="itemFullText">
+			
+<p style="text-align: justify;">&nbsp; &nbsp;Теперь вы имеете общее представление о последовательном периферийном интерфейсе и можно перейти к рассмотрению SPI модуля.&nbsp;<br />&nbsp; &nbsp;SPI модуль микроконтроллера AVR atmega16 использует для своей работы 4 вывода - MOSI, MISO, SCK и SS. Когда модуль не задействован, эти выводы являются линиями портов ввода/вывода общего назначения. Когда модуль включен, режим работы этих выводов переопределяются согласно следующей таблице.<br /><br /></p>
+<p style="text-align: center;"><img src="/images/stories/articles/spi2/spi-pin-regime.png" alt="" /></p>
+<p style="text-align: justify;">&nbsp; <br />&nbsp; &nbsp;Если к микроконтроллеру подключено больше одного периферийного устройства, в качестве дополнительных выводов выбора (SS), можно использовать любые выводы общего назначения. При этом штатный вывод SS должен быть всегда правильно сконфигурирован, даже если он не используется.</p>
+<h1 style="text-align: justify;">Регистры SPI модуля</h1>
+<p style="text-align: justify;">&nbsp; &nbsp;В микроконтроллере atmega16 для работы с модулем SPI используются три регистра:<br /><br />- управляющий регистр SPCR,<br />- статусный регистр SPSR,&nbsp;<br />- регистр данных SPDR.<br /><br />&nbsp; &nbsp;Все три регистра восьмиразрядные.<br /><br />&nbsp; &nbsp;<strong>Кофигурация модуля SPI устанавливается с помощью регистра SPCR (SPI Control Register).</strong></p>
+<p style="text-align: center;"><br /><img src="/images/stories/articles/spi2/SPCR.png" alt="" /></p>
+<p style="text-align: justify;"><br /><br /><strong>SPIE</strong> – разрешает /запрещает прерывания от модуля SPI. Если бит установлен в 1, прерывания от SPI разрешены.&nbsp;<br /><br /><strong>SPE</strong> – включает/выключает модуль SPI. Если бит установлен в 1, модуль SPI включен.<br /><br /><strong>DORD</strong> – определяет порядок передачи данных. Когда бит установлен в 1, содержимое регистра данных передается младшим битом вперед. Когда бит сброшен, то старшим битом вперед.<br /><br /><strong>MSTR</strong> – определяет режим работы микроконтроллера. Если бит установлен в 1, микроконтроллер работает в режиме Master (ведущий). Если бит сброшен – в режиме Slave (ведомый). Обычно микроконтроллер работает в режиме master.<br /><br /><strong>CPOL</strong> и <strong>CPHA</strong> – определяют в каком режиме работает SPI модуль. Требуемый режим работы зависит от используемого периферийного устройства.<br /><br /></p>
+<p style="text-align: center;"><img src="/images/stories/articles/spi2/spi-mode-table.png" alt="" /></p>
+<p style="text-align: justify;"><strong><br />SPR1</strong> и <strong>SPR0</strong> – определяют частоту тактового сигнала SPI модуля, то есть скорость обмена. Максимально возможная скорость обмена всегда указывается в спецификации периферийного устройства.<br /><br /><strong><br />&nbsp; &nbsp;Статусный регистр SPSR (SPI Status Register) предназначен для контроля состояния SPI модуля</strong>, кроме того он содержит дополнительный бит управления скоростью обмена.<br /><br /></p>
+<p style="text-align: center;"><img src="/images/stories/articles/spi2/SPSR.png" alt="" /></p>
+<p style="text-align: justify;"><strong><br />SPIF</strong> – флаг прерывания от SPI. Он устанавливается в 1 по окончании передачи байта данных. Если разрешены прерывания модуля, одновременно с установкой этого флага генерируется прерывание от SPI. Также этот флаг устанавливается в 1 при переводе микроконтроллера из режима master в режим slave с помощью вывода SS. <br />&nbsp; &nbsp;Сброс флага происходит аппаратно, при вызове подпрограммы обработки прерывания или после чтения регистра SPSR с последующим обращением к регистру данных SPDR.<br /><br /><strong>WCOL</strong>- флаг конфликта записи. Флаг устанавливается в 1, если во время передачи данных выполняется попытка записи в регистр данных SPDR. Флаг сбрасывается аппаратно после чтения регистра SPSR с последующим обращением к регистру данных SPDR.<br /><br /><strong>SPI2X</strong> — бит удвоения скорости обмена. Установка этого разряда в 1 удваивает частоту тактового сигнала SCK. Микроконтроллер при этом должен работать в режиме master.<br /><br />Взаимосвязь между битами SPR0, SPR1, SPI2X и частотой тактового сигнала SCK показана в таблице.&nbsp;<br /><br /></p>
+<p style="text-align: center;"><img src="/images/stories/articles/spi2/spi-SCK.png" alt="" /></p>
+<p><br />Где Fosc — тактовая частота микроконтроллера AVR.</p>
+<p><strong><br />&nbsp; &nbsp;Для передачи и приема данных предназначен регистр SPDR (SPI Data Register)</strong>. Запись данных в этот регистр инициирует передачу данных SPI модулем. При чтении этого регистра, считывается содержимое буфера сдвигового регистра SPI модуля.</p>
+<h1>&nbsp; &nbsp;Программный код</h1>
+<p>&nbsp; &nbsp;Минимальный программный код для работы с SPI модулем состоит из двух функций:<br /><br />- функции инициализации.<br />- функции передачи/приема байта данных<br /><strong><br />&nbsp; &nbsp;Инициализация SPI модуля<br /></strong><br />&nbsp; &nbsp;Инициализация включает в себя конфигурирование выводов SPI модуля и управляющего регистра SPCR.<br /><br /><pre><br />#define SPI_PORTX PORTB<br />#define SPI_DDRX DDRB<br /><br />#define SPI_MISO 6&nbsp;<br />#define SPI_MOSI 5<br />#define SPI_SCK 7<br />#define SPI_SS 4<br /><br />/*инициализация SPI модуля в режиме master*/<br />void SPI_Init(void)<br />{</p>
+<p>&nbsp; &nbsp;/*настройка портов ввода-вывода<br />&nbsp; &nbsp;все выводы, кроме MISO выходы*/<br />&nbsp; &nbsp;SPI_DDRX |= (1&lt;&lt;SPI_MOSI)|(1&lt;&lt;SPI_SCK)|(1&lt;&lt;SPI_SS)|(0&lt;&lt;SPI_MISO);<br />&nbsp; &nbsp;SPI_PORTX |= (1&lt;&lt;SPI_MOSI)|(1&lt;&lt;SPI_SCK)|(1&lt;&lt;SPI_SS)|(1&lt;&lt;SPI_MISO);<br /><br />&nbsp; &nbsp;/*разрешение spi,старший бит вперед,мастер, режим 0*/<br />&nbsp; &nbsp;SPCR = (1&lt;&lt;SPE)|(0&lt;&lt;DORD)|(1&lt;&lt;MSTR)|(0&lt;&lt;CPOL)|(0&lt;&lt;CPHA)|(1&lt;&lt;SPR1)|(0&lt;&lt;SPR0);<br />&nbsp; &nbsp;SPSR = (0&lt;&lt;SPI2X);<br />}<br /></pre></p>
+<p><strong>&nbsp; &nbsp;Передача/прием данных<br /></strong><br />&nbsp; &nbsp;Процесс передачи/приема данных с помощью SPI модуля, работающего в режиме Master, состоит из следующей последовательности действий:<br /><br />1. установка низкого логического уровня на линии SS<br />2. загрузка данных в регистр SPDR<br />3. ожидание окончания передачи (проверка флага SPIF)<br />4. сохранение принятых данных (чтение SPDR), если требуется<br />5. возврат на 2-ой шаг, если переданы не все данные<br />6. установка высокого логического уровня на линии SS<br /><br />&nbsp; Ниже приведено несколько вариантов функции передачи/приема данных.<br /><br />&nbsp;<strong> Передача одного байта данных по SPI<br /></strong><br /><pre><br />void SPI_WriteByte(uint8_t data)<br />{<br />&nbsp; &nbsp;SPI_PORTX &amp;= ~(1&lt;&lt;SPI_SS);<br />&nbsp; &nbsp;SPDR = data;<br />&nbsp; &nbsp;while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br />&nbsp; &nbsp;SPI_PORTX |= (1&lt;&lt;SPI_SS);&nbsp;<br />}<br /></pre><br /><br />&nbsp; &nbsp;<strong>Передача и прием одного байта данных по SPI<br /></strong><span id="_mce_caret" data-mce-bogus="true"><br /></span><pre><br />uint8_t SPI_ReadByte(uint8_t data)<br />{<br />&nbsp; &nbsp;uint8_t report;<br />&nbsp; &nbsp;SPI_PORTX &amp;= ~(1&lt;&lt;SPI_SS);<br />&nbsp; &nbsp;SPDR = data;<br />&nbsp; &nbsp;while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br />&nbsp; &nbsp;report = SPDR;<br />&nbsp; &nbsp;SPI_PORTX |= (1&lt;&lt;SPI_SS);&nbsp;<br />&nbsp; &nbsp;return report;&nbsp;<br />}<br /></pre><br /><br />&nbsp; &nbsp;<strong>Передача нескольких байтов данных по SPI&nbsp;<br /></strong>*data – указатель на массив передаваемых данных, а num – размерность массива<br /><br /><pre><br />void SPI_WriteArray(uint8_t num, uint8_t *data)<br />{<br />&nbsp; &nbsp;SPI_PORTX &amp;= ~(1&lt;&lt;SPI_SS);&nbsp;<br />&nbsp; &nbsp;while(num--){<br />&nbsp; &nbsp; &nbsp; SPDR = *data++;<br />&nbsp; &nbsp; &nbsp; while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br />&nbsp; &nbsp;}<br />&nbsp; &nbsp;SPI_PORTX |= (1&lt;&lt;SPI_SS);&nbsp;<br />}<br /><br />...<br /><br />//Пример использования:<br />uint8_t buf[3] = {12, 43, 98};<br /><br />…<br />SPI_WriteArray(3, buf);<br /></pre><br /><br />&nbsp; &nbsp;<strong>Передачи и прием нескольких байтов данных по SPI<br /></strong>*data – указатель на массив передаваемых данных, а num – размерность массива.<br />Принятые данные будут сохраняться в том же массиве.<br /><br /><pre><br />void SPI_ReadArray(uint8_t num, uint8_t *data)<br />{<br />&nbsp; &nbsp;SPI_PORTX &amp;= ~(1&lt;&lt;SPI_SS);&nbsp;<br />&nbsp; &nbsp;while(num--){<br />&nbsp; &nbsp; &nbsp; SPDR = *data;<br />&nbsp; &nbsp; &nbsp; while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br />&nbsp; &nbsp; &nbsp; *data++ = SPDR;&nbsp;<br />&nbsp; &nbsp;}<br />&nbsp; &nbsp;SPI_PORTX |= (1&lt;&lt;SPI_SS);&nbsp;<br />}<br /></pre></p>
+<h1>Файлы</h1>
+<p>&nbsp; &nbsp;Простой SPI драйвер, в котором сведены все описанные выше функции - <a href="/files/course/SPI-ShiftReg/AVR_SPI_driver.rar">AVR_SPI_driver.rar</a></p>
+<h1>Остальные части</h1>
+<p><span style="text-align: justify;">&nbsp; &nbsp;</span><a href="/index.php/programming-avr/item/137-avr-spi-module.html" title="Учебный курс AVR. Работа с модулем SPI. Ч1">Учебный курс AVR. Работа с модулем SPI. Ч1</a><br style="text-align: justify;" /><span style="text-align: justify;">&nbsp; &nbsp;</span><a href="/index.php/programming-avr/item/139-avr-spi-module-74hc595.html" title="Учебный курс AVR. Работа с SPI. Управление сдвиговым регистром. Ч3" style="text-align: justify;"><span>Учебный курс AVR. Работа с SPI. Управление сдвиговым регистром. Ч3</span></a></p>
+<p><span style="line-height: 1.3em;"></span></p>		</div>
+		
+		
+		<div class="clr"></div>
+
+		
+		
+		<!-- Plugins: AfterDisplayContent -->
+		
+		<!-- K2 Plugins: K2AfterDisplayContent -->
+		
+		<div class="clr"></div>
+
+	</div>
+
+		<!-- Social sharing -->
+	<div class="itemSocialSharing">
+
+				<!-- Twitter Button -->
+		<div class="itemTwitterButton">
+			<a href="https://twitter.com/share" class="twitter-share-button" data-lang="ru-ru" data-via="">Tweet</a>
+			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+		</div>
+		
+				<!-- Facebook Button -->
+		<div class="itemFacebookButton">
+			<div id="fb-root"></div>
+			<script>(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id)) return;js=d.createElement(s);js.id=id;js.src="//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.5";fjs.parentNode.insertBefore(js,fjs);}(document,'script','facebook-jssdk'));</script>
+			<div class="fb-like" data-width="200" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div>
+		</div>
+		
+				<!-- Google +1 Button -->
+		<div class="itemGooglePlusOneButton">
+			<div class="g-plusone" data-size="medium"></div>
+			<script>window.___gcfg={lang:'ru-RU'};(function(){var po=document.createElement('script');po.type='text/javascript';po.async=true;po.src='https://apis.google.com/js/platform.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(po,s);})();</script>
+		</div>
+		
+		<div class="clr"></div>
+
+	</div>
+	
+		<div class="itemLinks">
+
+		
+				<!-- Item tags -->
+		<div class="itemTagsBlock">
+			<span>Tagged under</span>
+			<ul class="itemTags">
+								<li><a href="/index.php/programming-avr/tag/spi.html">spi</a></li>
+								<li><a href="/index.php/programming-avr/tag/avr.html">avr</a></li>
+								<li><a href="/index.php/programming-avr/tag/учебный%20курс%20avr.html">учебный курс avr</a></li>
+								<li><a href="/index.php/programming-avr/tag/интерфейс.html">интерфейс</a></li>
+								<li><a href="/index.php/programming-avr/tag/драйвер.html">драйвер</a></li>
+							</ul>
+			<div class="clr"></div>
+		</div>
+		
+		
+		<div class="clr"></div>
+	</div>
+	
+	
+	
+	
+		<!-- Related items by tag -->
+	<div class="itemRelated">
+		<h3>Related items</h3>
+		<ul>
+						<li class="even">
+
+								<a class="itemRelTitle" href="/index.php/programming-avr/218-biblioteka-dlya-oprosa-knopok.html">Библиотека для опроса кнопок</a>
+				
+				
+				
+				
+				
+				
+				
+							</li>
+						<li class="odd">
+
+								<a class="itemRelTitle" href="/index.php/programming-avr/212-rabota-s-sd-kartoy-vosproizvedenie-wav-fayla-ch3.html">Работа с SD картой. Воспроизведение wav файла. Ч3</a>
+				
+				
+				
+				
+				
+				
+				
+							</li>
+						<li class="even">
+
+								<a class="itemRelTitle" href="/index.php/programming-avr/209-rabota-s-sd-kartoy-podklyuchenie-k-mikrokontrolleru-ch1.html">Работа с SD картой. Подключение к микроконтроллеру. Ч1</a>
+				
+				
+				
+				
+				
+				
+				
+							</li>
+						<li class="odd">
+
+								<a class="itemRelTitle" href="/index.php/programming-avr/208-avr315-ispolzovanie-twi-modulya-v-kachestve-veduschego-i2c-ustroystva.html">AVR315: Использование TWI модуля в качестве ведущего I2C устройства</a>
+				
+				
+				
+				
+				
+				
+				
+							</li>
+						<li class="even">
+
+								<a class="itemRelTitle" href="/index.php/programming-avr/201-uchebnyy-kurs-avr-ispolzovaniya-twi-modulya-kak-veduschego-i2c-ustroystva-rabota-na-preryvaniyah-ch5.html">Учебный курс AVR. Использования TWI модуля как ведущего I2C устройства. Работа на прерываниях. Ч5</a>
+				
+				
+				
+				
+				
+				
+				
+							</li>
+						<li class="clr"></li>
+		</ul>
+		<div class="clr"></div>
+	</div>
+	
+	<div class="clr"></div>
+
+	
+	
+	
+	<!-- Plugins: AfterDisplay -->
+	
+	<!-- K2 Plugins: K2AfterDisplay -->
+	
+		<!-- K2 Plugins: K2CommentsBlock -->
+	<script type="text/javascript">
+<!--
+var jcomments=new JComments(138, 'com_k2','/index.php/component/jcomments/');
+jcomments.setList('comments-list');
+//-->
+</script>
+<div id="jc">
+<div id="comments"><h4>Comments <a class="rss" href="/index.php/component/jcomments/feed/com_k2/138.html" title="RSS feed for comments to this post" target="_blank">&nbsp;</a><a class="refresh" href="#" title="Refresh comments list" onclick="jcomments.showPage(138,'com_k2',0);return false;">&nbsp;</a></h4>
+<div class="comments-list" id="comments-list-0">
+		<div class="even" id="comment-item-2172">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2172" id="comment-2172">#</a>
+<span class="comment-author">Сергей</span>
+<span class="comment-date">2012-10-23 06:50</span>
+<div class="comment-body" id="comment-body-2172">Респект! Ждем продолжения, желательно с каким-нибудь дисплеем от мобильного.</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2172">
+		<div class="odd" id="comment-item-2173">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2173" id="comment-2173">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-10-23 18:38</span>
+<div class="comment-body" id="comment-body-2173">Так на сайте есть пример для Nokia 3310 и Motorola C350. Я планирую написать про сдвиговый регистр, цап (или ацп), а потом еще про flash память at45db.</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2173">
+		<div class="even" id="comment-item-2176">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2176" id="comment-2176">#</a>
+<span class="comment-author">Сергей</span>
+<span class="comment-date">2012-10-24 04:34</span>
+<div class="comment-body" id="comment-body-2176">Точно, нашел. А i2c есть в планах?</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2176">
+		<div class="odd" id="comment-item-2177">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2177" id="comment-2177">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-10-24 21:43</span>
+<div class="comment-body" id="comment-body-2177">Да, есть.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+	</div>
+	</div>
+		<div class="even" id="comment-item-2178">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2178" id="comment-2178">#</a>
+<span class="comment-author">foxit</span>
+<span class="comment-date">2012-10-25 03:56</span>
+<div class="comment-body" id="comment-body-2178">Жду продолжения!</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="odd" id="comment-item-2193">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2193" id="comment-2193">#</a>
+<span class="comment-author">megannnn98</span>
+<span class="comment-date">2012-11-02 09:06</span>
+<div class="comment-body" id="comment-body-2193">спасибо большое</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-2204">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2204" id="comment-2204">#</a>
+<span class="comment-author">Zliva</span>
+<span class="comment-date">2012-11-10 13:27</span>
+<div class="comment-body" id="comment-body-2204">Очень нужна связка двух АВР через СПИ с контролем получения/отпра<span style="font-size:0;padding:0;margin:0;"> </span>вки данных. Срочно!!!</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2204">
+		<div class="odd" id="comment-item-2207">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2207" id="comment-2207">#</a>
+<span class="comment-author">foxit</span>
+<span class="comment-date">2012-11-11 16:09</span>
+<div class="comment-body" id="comment-body-2207">Можно помочь разве что ссылками.<br />http://www.ermicro.com/blog/?p=1050<br /><br />http://www.rocketnumbernine.com/2009/04/26/using-spi-on-an-avr-1<br />http://www.rocketnumbernine.com/2009/05/12/using-spi-on-an-avr-2<br />http://www.rocketnumbernine.com/2009/07/03/using-spi-on-an-avr-3</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-2219">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2219" id="comment-2219">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-11-17 18:11</span>
+<div class="comment-body" id="comment-body-2219">Готового кода у меня нет. Ни разу не решал такой задачи.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="odd" id="comment-item-2213">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2213" id="comment-2213">#</a>
+<span class="comment-author">skullhead</span>
+<span class="comment-date">2012-11-14 07:16</span>
+<div class="comment-body" id="comment-body-2213">позвольте высказать пожелание в продолжение темы-не могли бы вы в качестве примера реального применения SPI привести работу управляемой светодиодной ленты.и пример простой,и весьма прикладной)</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2213">
+		<div class="even" id="comment-item-2217">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2217" id="comment-2217">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-11-17 18:09</span>
+<div class="comment-body" id="comment-body-2217">Я уже написал код для управления по SPI 7-ми сегментным индикатором подключенным через сдвиговые регистры.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="odd" id="comment-item-2215">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2215" id="comment-2215">#</a>
+<span class="comment-author">vovanxp</span>
+<span class="comment-date">2012-11-16 12:05</span>
+<div class="comment-body" id="comment-body-2215">Когда будет третья часть? Жду с нетерпением.</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2215">
+		<div class="even" id="comment-item-2218">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2218" id="comment-2218">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-11-17 18:10</span>
+<div class="comment-body" id="comment-body-2218">Код примеров написал, а до текста никак руки не дойдут. В ближайшее время напишу. Могу проекты на форум пока выложить, если нужно.</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2218">
+		<div class="odd" id="comment-item-2221">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2221" id="comment-2221">#</a>
+<span class="comment-author">vovanxp</span>
+<span class="comment-date">2012-11-19 10:29</span>
+<div class="comment-body" id="comment-body-2221"><span class="quote">Quoting Pashgan:</span><blockquote><div>Код примеров написал, а до текста никак руки не дойдут. В ближайшее время напишу. Могу проекты на форум пока выложить, если нужно.</div></blockquote><br />Пожалуйста, выложите пока на форум.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+	</div>
+		<div class="even" id="comment-item-2227">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2227" id="comment-2227">#</a>
+<span class="comment-author">shs</span>
+<span class="comment-date">2012-11-20 17:03</span>
+<div class="comment-body" id="comment-body-2227">Паша подскажи как передать структуру а не массив? <br /><br />typedef struct{<br />	unsigned char sec;<br />	unsigned char min;<br />	unsigned char hour;<br />} time_t;<br />time_t t;<br /><br />void SPI_Send(time_t *time)<br />{<br /> unsigned char num = 3;<br /><br /> RTC_SELECT();<br /> while(num--){<br /> SPDR = *time++;//error<span style="font-size:0;padding:0;margin:0;"> </span>: incompatible types in assignment<br />// понятно что тип не тот <br />//а как быть не догоняю<br /><br /> while(!(SPSR & (1</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2227">
+		<div class="odd" id="comment-item-2229">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2229" id="comment-2229">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-11-20 20:31</span>
+<div class="comment-body" id="comment-body-2229">Например так.<br /><span class="code">Code:</span><code><br />void SPI_WriteStr(time_t *time)<br />{<br /> SPI_PORTX &amp;= ~(1&lt;&lt;SPI_SS); <br /> <br /> SPDR = time-&gt;sec;<br /> while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br /> <br /> SPDR = time-&gt;min;<br /> while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br /> <br /> SPDR = time-&gt;hour;<br /> while(!(SPSR &amp; (1&lt;&lt;SPIF)));<br /> <br /> SPI_PORTX |= (1&lt;&lt;SPI_SS); <br />}<br /></code><br />А вообще.. у тебя же данные одного типа. Зачем тебе структура? В этом случае можно использовать и массив.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-2240">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2240" id="comment-2240">#</a>
+<span class="comment-author">Артём</span>
+<span class="comment-date">2012-11-25 14:17</span>
+<div class="comment-body" id="comment-body-2240">Или так<br />SPI_ReadArray((unsigned char *)&t, sizeof(t));</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="odd" id="comment-item-2231">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2231" id="comment-2231">#</a>
+<span class="comment-author">Mikhail</span>
+<span class="comment-date">2012-11-21 16:05</span>
+<div class="comment-body" id="comment-body-2231">Большое спасибо за такие труды. У вас есть какой-то стиль написания, плюс оформление, которые читать и понимать очень легко. Прошу не изменяйтесь :). И вопрос: у вас планируется разобрать интерфейс I2C и прошивку МК через бутлоадер?</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2231">
+		<div class="even" id="comment-item-2232">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2232" id="comment-2232">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-11-21 21:18</span>
+<div class="comment-body" id="comment-body-2232">Спасибо. Да, планирую. Вопрос времени.. а его как всегда не хватает..</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="odd" id="comment-item-2241">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2241" id="comment-2241">#</a>
+<span class="comment-author">Артём</span>
+<span class="comment-date">2012-11-25 14:19</span>
+<div class="comment-body" id="comment-body-2241">Смотрите AVR112 - бутлоадер через i2c</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-2252">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2252" id="comment-2252">#</a>
+<span class="comment-author">Ренат</span>
+<span class="comment-date">2012-12-04 18:47</span>
+<div class="comment-body" id="comment-body-2252">Блин, я похоже после армии совсем отупел... Есть материал какой нибудь, чтоб все сначала начать?((</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2252">
+		<div class="odd" id="comment-item-2253">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2253" id="comment-2253">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2012-12-04 19:09</span>
+<div class="comment-body" id="comment-body-2253">Есть... "первая программа на си"<br />http://chipenable.ru/index.php/programming-avr/item/2-uchebnyy-kurs-iar-avr-pervaya-programma-na-si.html</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-2805">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2805" id="comment-2805">#</a>
+<span class="comment-author">Иван</span>
+<span class="comment-date">2013-04-11 19:16</span>
+<div class="comment-body" id="comment-body-2805">Привет например я подключил два радио модуля NRF24L01 настроил SPI, записываю данные в SPDR они должны появится в приемнике в том самом регистре, и делай сними все что угодно. Или с радио связью там посложнее?</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2805">
+		<div class="odd" id="comment-item-2809">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2809" id="comment-2809">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2013-04-12 11:55</span>
+<div class="comment-body" id="comment-body-2809">Нужно читать даташит на эту микросхему. Думаю там есть какой-то формат сообщения. В интернете есть примеры использования этого модуля.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-2852">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2852" id="comment-2852">#</a>
+<span class="comment-author">den2life</span>
+<span class="comment-date">2013-05-02 21:09</span>
+<div class="comment-body" id="comment-body-2852">привет всем. я прошил мк-просто инициализировал spi, почему на 5 ножке mosi наблюдается 5 вольт. там ведь должно быть 0.</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-2852">
+		<div class="odd" id="comment-item-2853">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-2853" id="comment-2853">#</a>
+<span class="comment-author">den2life</span>
+<span class="comment-date">2013-05-02 23:42</span>
+<div class="comment-body" id="comment-body-2853">Вопрос закрыт</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-3827">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-3827" id="comment-3827">#</a>
+<span class="comment-author">zloiia</span>
+<span class="comment-date">2014-02-20 12:16</span>
+<div class="comment-body" id="comment-body-3827">Исправьте, пожалуйста опечатку в описании регистра SPCR. Бит MTSR называется MSTR</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-3827">
+		<div class="odd" id="comment-item-3871">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-3871" id="comment-3871">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2014-03-18 20:02</span>
+<div class="comment-body" id="comment-body-3871">Исправил. Спасибо.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-3832">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-3832" id="comment-3832">#</a>
+<span class="comment-author">SAnEK_Bo</span>
+<span class="comment-date">2014-02-23 16:02</span>
+<div class="comment-body" id="comment-body-3832">Здравствуйте. помогите, пожалуйста. Мне нужно Соединить микроконтроллер ATmega8A с пятью драйверами MAX7221 по интерфейсу SPI. Работаю в CVAVR, Proteus ну и на реальном железе. Несколько дней гуглил, сам разбирался, но смог подключить только один такой драйвер. <br /><br /><br />#include <br />#include <br />#define MOSI 3<br />#define SCK 5<br />#define SS 2<br />void Port_init()<br />{<br />DDRB |= (1</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="odd" id="comment-item-4066">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4066" id="comment-4066">#</a>
+<span class="comment-author">Слава</span>
+<span class="comment-date">2014-05-05 12:25</span>
+<div class="comment-body" id="comment-body-4066">Добрый день!!! Не могу понять, а для чего применены "Пользовательск<span style="font-size:0;padding:0;margin:0;"> </span>ие типы" uint8_t, почему нельзя было оставить unsigned char???</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-4066">
+		<div class="even" id="comment-item-4079">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4079" id="comment-4079">#</a>
+<span class="comment-author">Pashgan</span>
+<span class="comment-date">2014-05-08 09:53</span>
+<div class="comment-body" id="comment-body-4079">http://chipenable.ru/index.php/programming-avr/item/62-10-pravil-programmirovaniya-na-si-predotvraschayuschih-oshibki.html</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="odd" id="comment-item-4081">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4081" id="comment-4081">#</a>
+<span class="comment-author">Слава</span>
+<span class="comment-date">2014-05-09 15:05</span>
+<div class="comment-body" id="comment-body-4081">Спасибо.... Понял...</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-4325">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4325" id="comment-4325">#</a>
+<span class="comment-author">Dmitri256</span>
+<span class="comment-date">2014-10-26 12:58</span>
+<div class="comment-body" id="comment-body-4325">в инициализации не совсем правильно, вместо <br />SPI_DDRX |= (1</div>
+</div><div class="clear"></div>
+</div>
+	</div>
+	<div class="comments-list" id="comments-list-4325">
+		<div class="odd" id="comment-item-4326">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4326" id="comment-4326">#</a>
+<span class="comment-author">Dmitri256</span>
+<span class="comment-date">2014-10-26 13:00</span>
+<div class="comment-body" id="comment-body-4326">вместо <br /><span class="code">Code:</span><code>SPI_DDRX |= (1&lt;&lt;SPI_MOSI)|(1&lt;&lt;SPI_SCK)|(1&lt;&lt;SPI_SS)|(0&lt;&lt;SPI_MISO); </code><br />правильнее так<br /><span class="code">Code:</span><code> <br />SPI_DDRX |= (1&lt;&lt;SPI_MOSI)|(1&lt;&lt;SPI_SCK)|(1&lt;&lt;SPI_SS);<br /> SPI_DDRX &amp;= ~(1&lt;&lt;SPI_MISO);<br /></code></div>
+</div><div class="clear"></div>
+</div>
+		</div>
+	</div>
+		<div class="even" id="comment-item-4335">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4335" id="comment-4335">#</a>
+<span class="comment-author">Master_Gril</span>
+<span class="comment-date">2014-11-10 10:28</span>
+<div class="comment-body" id="comment-body-4335">Добрый день!<br />Подскажите пожалуйста, если использовать приведённый тут код в авр студио 6, какие библиотеки нужно подключать?</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="odd" id="comment-item-4355">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4355" id="comment-4355">#</a>
+<span class="comment-author">alex6441161</span>
+<span class="comment-date">2014-12-03 13:10</span>
+<div class="comment-body" id="comment-body-4355">у меня AT90USB162 и ATtiny2313A общаются по SPI. В ATtiny2313A реализован программный SPI. При передаче одного байта все передается норм, а вот при передаче двух байт передается какая-то фигня. Но заметил, если постоянно передавать один и тот же байт, то возвращаться будут все время одни и те же данные, но не те которые послал. Если соединить MOSI и MISO у мастера, то данные отправленные и пришедшие совпадают. Я так понимаю что проблема с ведомым, но в чем именно не могу понять. Может кто подскажет?<br /><span class="code">Code:</span><code>void USI_init_SPI_S (void)<br />{<br /> DDR_SPI |= (1&lt;&lt;DO); <br /> DDR_SPI &amp;= ~(1&lt;&lt;UCSK);<br /> DDR_SPI &amp;= ~(1&lt;&lt;SS); <br /> DDR_SPI &amp;= ~(1&lt;&lt;DI); <br /> USICR |= (1&lt;&lt;USIWM0) | (1&lt;&lt;USICS1);<br />}<br /><br />unsigned char SPI_WR_S (unsigned char data_w)<br />{<br /> USIDR = data_w;<br /> USISR |= (1&lt;&lt;USIOIF);<br />	while(!(USISR &amp; (1&lt;&lt;USIOIF)));<br />	return (USIDR);<br />}<br /><br />int main (void)<br />{<br />	unsigned char data_r[2];<br />	unsigned char i=0;<br /> USI_init_SPI_S ();<br />for(;;)<br /> { <br /> if(bit_is_clear(PIN_SPI, SS))<br /> {<br />	data_r = SPI_WR_S(data_r);<br /> if(i&gt;=2) i=0;<br /> }</code></div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-4433">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4433" id="comment-4433">#</a>
+<span class="comment-author">kript0n</span>
+<span class="comment-date">2015-02-15 09:31</span>
+<div class="comment-body" id="comment-body-4433">Я кое-чего не понимаю.<br />Запись данных ведется через MOSI. В коде его определили, как 5 выход на порту B.<br /><span class="code">Code:</span><code>#define SPI_MOSI 5</code><br />Вообще это стандартный MOSI вывод на atmega16. А если я хочу использовать другой вывод, как модуль узнает через какой выход слать данные? Явно это нигде не задается.</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="odd" id="comment-item-4720">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4720" id="comment-4720">#</a>
+<span class="comment-author">Александр Бабаков</span>
+<span class="comment-date">2016-01-13 15:55</span>
+<div class="comment-body" id="comment-body-4720">Добрый вечер ! Спасибо большое за ваши труды !!! Я недавно только начал изучать программировани<span style="font-size:0;padding:0;margin:0;"> </span>е и мне сложновато понять объявление типа uint8_t . Могу ли я записать например (char data) вместо (uint8_t data)? И как это может повлиять на работу ?</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+		<div class="even" id="comment-item-4722">
+<div class="rbox">
+<div class="comment-box">
+<a class="comment-anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#comment-4722" id="comment-4722">#</a>
+<span class="comment-author">Vladsh</span>
+<span class="comment-date">2016-01-20 13:33</span>
+<div class="comment-body" id="comment-body-4722">Всем доброго дня! Имеется устройство на мега16! Питание подал на схему, и на выводах MOSI, MISO, SCK. т.е. с 5-9 ножки есть постоянно+5в, разъясните так должно быть или нет не могу понять! устройство(тайм<span style="font-size:0;padding:0;margin:0;"> </span>ер) не включается, признаков жизни не подает, хотя работало раньше!!!</div>
+</div><div class="clear"></div>
+</div>
+		</div>
+</div>
+<div id="comments-list-footer"><a class="refresh" href="#" title="Refresh comments list" onclick="jcomments.showPage(138,'com_k2',0);return false;">Refresh comments list</a><br /><a class="rss" href="/index.php/component/jcomments/feed/com_k2/138.html" title="RSS feed for comments to this post" target="_blank">RSS feed for comments to this post</a></div>
+</div>
+<a id="addcomments" href="#addcomments"></a>
+<p class="message">У вас недостаточно прав для комментирования.</p>
+<div id="comments-footer" align="center"><a href="http://www.joomlatune.ru" title="JComments" target="_blank">JComments</a></div>
+<script type="text/javascript">
+<!--
+jcomments.setAntiCache(1,0,0);
+//-->
+</script> 
+</div>	
+	
+		<div class="itemBackToTop">
+		<a class="k2Anchor" href="/index.php/programming-avr/138-avr-spi-module-part2.html#startOfPageId138">
+			back to top		</a>
+	</div>
+	
+	<div class="clr"></div>
+
+</div>
+<!-- End K2 Item Layout -->
+
+<!-- JoomlaWorks "K2" (v2.8.0) | Learn more about K2 at http://getk2.org -->
+
+
+					
+					<!-- End Content -->
+				</main>
+							</div>
+		</div>
+	</div>
+	<!-- Footer -->
+	<footer class="footer" role="contentinfo">
+		<div class="container">
+			<hr />
+			
+			<p class="pull-right">
+				<a href="#top" id="back-top">
+					Наверх				</a>
+			</p>
+			<p>
+				&copy; 2024 chipenable.ru			</p>
+		</div>
+	</footer>
+	
+</body>
+</html>

@@ -754,8 +754,8 @@ int main(void)
 			Display.Buffer_SetPixel(rand() % 127,rand() % 31);
 		}
 		
-		for(int i = 0; i < 100; i++)
- 4ec:	44 e6       	ldi	r20, 0x64	; 100
+		for(int i = 0; i < 150; i++)
+ 4ec:	46 e9       	ldi	r20, 0x96	; 150
  4ee:	e4 16       	cp	r14, r20
  4f0:	f1 04       	cpc	r15, r1
  4f2:	0c f0       	brlt	.+2      	; 0x4f6 <__EEPROM_REGION_LENGTH__+0xf6>
@@ -1086,7 +1086,7 @@ int main(void)
 			Display.Buffer_SetPixel(rand() % 127,rand() % 31);
 		}
 		
-		for(int i = 0; i < 100; i++)
+		for(int i = 0; i < 150; i++)
  762:	5f ef       	ldi	r21, 0xFF	; 255
  764:	e5 1a       	sub	r14, r21
  766:	f5 0a       	sbc	r15, r21

@@ -13,7 +13,7 @@ int main(void)
 			Display.Buffer_SetPixel(rand() % 127,rand() % 31);
 		}
 		
-		for(int i = 0; i < 100; i++)
+		for(int i = 0; i < 150; i++)
 		{
 			Display.Buffer_RemovePixel(rand() % 127,rand() % 31);
 		}
