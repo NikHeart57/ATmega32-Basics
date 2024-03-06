@@ -1,0 +1,311 @@
+
+SPI_SSD1306_Display.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000001d4  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  00000228  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  00000228  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000258  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000030  00000000  00000000  00000294  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000099d  00000000  00000000  000002c4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000005dc  00000000  00000000  00000c61  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000395  00000000  00000000  0000123d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000044  00000000  00000000  000015d4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000003b0  00000000  00000000  00001618  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000021b  00000000  00000000  000019c8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000020  00000000  00000000  00001be3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 53 00 	call	0xa6	; 0xa6 <main>
+  64:	0c 94 e8 00 	jmp	0x1d0	; 0x1d0 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <_Z5setupv>:
+#define SCK		PB7
+
+
+void setup(void)
+{
+	DDRC  |= (1 << PC1);
+  6c:	84 b3       	in	r24, 0x14	; 20
+  6e:	82 60       	ori	r24, 0x02	; 2
+  70:	84 bb       	out	0x14, r24	; 20
+	// Настройка пина CS (Вместо этого пина можно использовать пин SS или любой другой, по желанию)
+	DDRC  |= (1 << CS);										// Выходы (1)
+  72:	84 b3       	in	r24, 0x14	; 20
+  74:	81 60       	ori	r24, 0x01	; 1
+  76:	84 bb       	out	0x14, r24	; 20
+	PORTC |= (1 << CS);										// Изначально высокий уровень CS
+  78:	85 b3       	in	r24, 0x15	; 21
+  7a:	81 60       	ori	r24, 0x01	; 1
+  7c:	85 bb       	out	0x15, r24	; 21
+	
+	// Настройка пинов SPI
+	DDRB  |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(0 << MISO);	// Обязательная настройка! Для всех 4-х пинов SPI!
+  7e:	87 b3       	in	r24, 0x17	; 23
+  80:	80 6b       	ori	r24, 0xB0	; 176
+  82:	87 bb       	out	0x17, r24	; 23
+	PORTB |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(1 << MISO);	//
+  84:	88 b3       	in	r24, 0x18	; 24
+  86:	80 6f       	ori	r24, 0xF0	; 240
+  88:	88 bb       	out	0x18, r24	; 24
+
+	// Разрешение SPI (SPE), старший бит вперед (DORD), мастер (MSTR), режим 0 (CPOL, CPHA), делитель частоты - 128 (SPR1, SPR0)
+	SPCR = (1 << SPE)|(0 << DORD)|(1 << MSTR)|(0 << CPOL)|(0 << CPHA)|(1 << SPR1)|(0 << SPR0);
+  8a:	82 e5       	ldi	r24, 0x52	; 82
+  8c:	8d b9       	out	0x0d, r24	; 13
+	SPSR = (0 << SPI2X);
+  8e:	1e b8       	out	0x0e, r1	; 14
+  90:	08 95       	ret
+
+00000092 <_Z18ssd1306SendCommandh>:
+}
+
+void ssd1306SendCommand(uint8_t data)
+{
+	PORTB &= ~(1 << SS);				// Проверяй порты!!!
+  92:	98 b3       	in	r25, 0x18	; 24
+  94:	9f 7e       	andi	r25, 0xEF	; 239
+  96:	98 bb       	out	0x18, r25	; 24
+	SPDR = data;
+  98:	8f b9       	out	0x0f, r24	; 15
+	while(!(SPSR & (1 << SPIF)));
+  9a:	77 9b       	sbis	0x0e, 7	; 14
+  9c:	fe cf       	rjmp	.-4      	; 0x9a <_Z18ssd1306SendCommandh+0x8>
+	PORTB |= (1 << SS);
+  9e:	88 b3       	in	r24, 0x18	; 24
+  a0:	80 61       	ori	r24, 0x10	; 16
+  a2:	88 bb       	out	0x18, r24	; 24
+  a4:	08 95       	ret
+
+000000a6 <main>:
+}
+
+int main(void)
+{
+	setup();
+  a6:	0e 94 36 00 	call	0x6c	; 0x6c <_Z5setupv>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  aa:	2f ef       	ldi	r18, 0xFF	; 255
+  ac:	8f ef       	ldi	r24, 0xFF	; 255
+  ae:	9c e2       	ldi	r25, 0x2C	; 44
+  b0:	21 50       	subi	r18, 0x01	; 1
+  b2:	80 40       	sbci	r24, 0x00	; 0
+  b4:	90 40       	sbci	r25, 0x00	; 0
+  b6:	e1 f7       	brne	.-8      	; 0xb0 <main+0xa>
+  b8:	00 c0       	rjmp	.+0      	; 0xba <main+0x14>
+  ba:	00 00       	nop
+	_delay_ms(1000);						// Не обязательно
+	
+	
+	ssd1306SendCommand(0xAE); //display off
+  bc:	8e ea       	ldi	r24, 0xAE	; 174
+  be:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xD5); //Set Memory Addressing Mode
+  c2:	85 ed       	ldi	r24, 0xD5	; 213
+  c4:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x80); //00,Horizontal Addressing Mode;01,Vertical
+  c8:	80 e8       	ldi	r24, 0x80	; 128
+  ca:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xA8); //Set Page Start Address for Page Addressing
+  ce:	88 ea       	ldi	r24, 0xA8	; 168
+  d0:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x3F); //Set COM Output Scan Direction
+  d4:	8f e3       	ldi	r24, 0x3F	; 63
+  d6:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xD3); //set low column address
+  da:	83 ed       	ldi	r24, 0xD3	; 211
+  dc:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x00); //set high column address
+  e0:	80 e0       	ldi	r24, 0x00	; 0
+  e2:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x40); //set start line address
+  e6:	80 e4       	ldi	r24, 0x40	; 64
+  e8:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x8D); //set contrast control register
+  ec:	8d e8       	ldi	r24, 0x8D	; 141
+  ee:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x14);
+  f2:	84 e1       	ldi	r24, 0x14	; 20
+  f4:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x20); //set segment re-map 0 to 127
+  f8:	80 e2       	ldi	r24, 0x20	; 32
+  fa:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x00); //set normal display
+  fe:	80 e0       	ldi	r24, 0x00	; 0
+ 100:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xA1); //set multiplex ratio(1 to 64)
+ 104:	81 ea       	ldi	r24, 0xA1	; 161
+ 106:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xC8); //
+ 10a:	88 ec       	ldi	r24, 0xC8	; 200
+ 10c:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xDA); //0xa4,Output follows RAM
+ 110:	8a ed       	ldi	r24, 0xDA	; 218
+ 112:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x12); //set display offset
+ 116:	82 e1       	ldi	r24, 0x12	; 18
+ 118:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x81); //not offset
+ 11c:	81 e8       	ldi	r24, 0x81	; 129
+ 11e:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x8F); //set display clock divide ratio/oscillator frequency
+ 122:	8f e8       	ldi	r24, 0x8F	; 143
+ 124:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xD9); //set divide ratio
+ 128:	89 ed       	ldi	r24, 0xD9	; 217
+ 12a:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xF1); //set pre-charge period
+ 12e:	81 ef       	ldi	r24, 0xF1	; 241
+ 130:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xDB);
+ 134:	8b ed       	ldi	r24, 0xDB	; 219
+ 136:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0x40); //set com pins hardware configuration
+ 13a:	80 e4       	ldi	r24, 0x40	; 64
+ 13c:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xA4);
+ 140:	84 ea       	ldi	r24, 0xA4	; 164
+ 142:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xA6); //set vcomh
+ 146:	86 ea       	ldi	r24, 0xA6	; 166
+ 148:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	ssd1306SendCommand(0xAF); //0x20,0.77xVcc
+ 14c:	8f ea       	ldi	r24, 0xAF	; 175
+ 14e:	0e 94 49 00 	call	0x92	; 0x92 <_Z18ssd1306SendCommandh>
+	
+	PORTC |= (1 << PC1);
+ 152:	85 b3       	in	r24, 0x15	; 21
+ 154:	82 60       	ori	r24, 0x02	; 2
+ 156:	85 bb       	out	0x15, r24	; 21
+ 158:	86 e6       	ldi	r24, 0x66	; 102
+ 15a:	9e e0       	ldi	r25, 0x0E	; 14
+ 15c:	01 97       	sbiw	r24, 0x01	; 1
+ 15e:	f1 f7       	brne	.-4      	; 0x15c <main+0xb6>
+ 160:	00 00       	nop
+	_delay_ms(1);
+	PORTC &= ~(1 << PC1);
+ 162:	85 b3       	in	r24, 0x15	; 21
+ 164:	8d 7f       	andi	r24, 0xFD	; 253
+ 166:	85 bb       	out	0x15, r24	; 21
+ 168:	9f ef       	ldi	r25, 0xFF	; 255
+ 16a:	2f e7       	ldi	r18, 0x7F	; 127
+ 16c:	84 e0       	ldi	r24, 0x04	; 4
+ 16e:	91 50       	subi	r25, 0x01	; 1
+ 170:	20 40       	sbci	r18, 0x00	; 0
+ 172:	80 40       	sbci	r24, 0x00	; 0
+ 174:	e1 f7       	brne	.-8      	; 0x16e <main+0xc8>
+ 176:	00 c0       	rjmp	.+0      	; 0x178 <main+0xd2>
+ 178:	00 00       	nop
+	_delay_ms(100);
+	
+	PORTC |= (1 << PC1);
+ 17a:	85 b3       	in	r24, 0x15	; 21
+ 17c:	82 60       	ori	r24, 0x02	; 2
+ 17e:	85 bb       	out	0x15, r24	; 21
+ 180:	86 e6       	ldi	r24, 0x66	; 102
+ 182:	9e e0       	ldi	r25, 0x0E	; 14
+ 184:	01 97       	sbiw	r24, 0x01	; 1
+ 186:	f1 f7       	brne	.-4      	; 0x184 <main+0xde>
+ 188:	00 00       	nop
+	_delay_ms(1);
+	PORTC &= ~(1 << PC1);
+ 18a:	85 b3       	in	r24, 0x15	; 21
+ 18c:	8d 7f       	andi	r24, 0xFD	; 253
+ 18e:	85 bb       	out	0x15, r24	; 21
+ 190:	9f ef       	ldi	r25, 0xFF	; 255
+ 192:	2f e7       	ldi	r18, 0x7F	; 127
+ 194:	84 e0       	ldi	r24, 0x04	; 4
+ 196:	91 50       	subi	r25, 0x01	; 1
+ 198:	20 40       	sbci	r18, 0x00	; 0
+ 19a:	80 40       	sbci	r24, 0x00	; 0
+ 19c:	e1 f7       	brne	.-8      	; 0x196 <main+0xf0>
+ 19e:	00 c0       	rjmp	.+0      	; 0x1a0 <main+0xfa>
+ 1a0:	00 00       	nop
+	_delay_ms(100);
+	
+	PORTC |= (1 << PC1);
+ 1a2:	85 b3       	in	r24, 0x15	; 21
+ 1a4:	82 60       	ori	r24, 0x02	; 2
+ 1a6:	85 bb       	out	0x15, r24	; 21
+ 1a8:	86 e6       	ldi	r24, 0x66	; 102
+ 1aa:	9e e0       	ldi	r25, 0x0E	; 14
+ 1ac:	01 97       	sbiw	r24, 0x01	; 1
+ 1ae:	f1 f7       	brne	.-4      	; 0x1ac <main+0x106>
+ 1b0:	00 00       	nop
+	_delay_ms(1);
+	PORTC &= ~(1 << PC1);
+ 1b2:	85 b3       	in	r24, 0x15	; 21
+ 1b4:	8d 7f       	andi	r24, 0xFD	; 253
+ 1b6:	85 bb       	out	0x15, r24	; 21
+ 1b8:	9f ef       	ldi	r25, 0xFF	; 255
+ 1ba:	2f e7       	ldi	r18, 0x7F	; 127
+ 1bc:	84 e0       	ldi	r24, 0x04	; 4
+ 1be:	91 50       	subi	r25, 0x01	; 1
+ 1c0:	20 40       	sbci	r18, 0x00	; 0
+ 1c2:	80 40       	sbci	r24, 0x00	; 0
+ 1c4:	e1 f7       	brne	.-8      	; 0x1be <main+0x118>
+ 1c6:	00 c0       	rjmp	.+0      	; 0x1c8 <main+0x122>
+ 1c8:	00 00       	nop
+	_delay_ms(100);	
+}
+ 1ca:	80 e0       	ldi	r24, 0x00	; 0
+ 1cc:	90 e0       	ldi	r25, 0x00	; 0
+ 1ce:	08 95       	ret
+
+000001d0 <_exit>:
+ 1d0:	f8 94       	cli
+
+000001d2 <__stop_program>:
+ 1d2:	ff cf       	rjmp	.-2      	; 0x1d2 <__stop_program>
