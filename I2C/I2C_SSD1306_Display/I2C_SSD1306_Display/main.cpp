@@ -1,91 +1,68 @@
 #include "main.h"
+using namespace std;
+
+
+struct point				// Структура точки
+{
+	float x, y, z;
+};
+
+struct triangle				// Структура треугольника p
+{
+	point p[3];
+};
+
+void proj(point &pInput, point &pProj, float Vect[6])
+{
+	pProj.x = (Vect[4] * Vect[5] * pInput.x) / (pInput.z);
+	pProj.y = (Vect[5] * pInput.y) / (pInput.z);
+	pProj.z = (pInput.z * Vect[2]) - (Vect[0] * Vect[2]);
+}
+
+
 
 int main(void)
-{
-	ssd1306_Display Display(0b01111000, 0, 0);
+{	
+	ssd1306_Display Display(0b01111000, 64, 32);
 	Display.Init();
-	int i = 0;
-
-	while (1)
-	{		
-		Display.Buffer_Fill(0);
+	Display.Buffer_Fill(0);
+	
+	const int AmmountOfPoints = 40;
 		
-		for(int j = 0; j < 3; j++)
-		{
-			Display.Buffer_SetTriangle(rand() % 127,rand() % 63, rand() % 127,rand() % 63, rand() % 127,rand() % 63);
-		}
-		
-		Display.Buffer_SetPixel(i, 0);
-		Display.Buffer_SetPixel(i, 1);
-		Display.Buffer_SetPixel(i, 2);
-		Display.Buffer_SetPixel(i, 3);
-		Display.Buffer_SetPixel(i, 5);
-		Display.Buffer_SetPixel(i, 7);
-		i++;
-		
-		if(i >= 128)
-		{
-			i = 0;
-		}
-		
-		Display.Buffer_Send();
-	}
+	point arrPoints[AmmountOfPoints];
 	
-	
-	/*
-	// Тест 10 треугольников
-	
-		Display.Buffer_Fill(0);
-			
-		for(int j = 0; j < 10; j++)
-		{
-			Display.Buffer_SetTriangle(rand() % 127,rand() % 63, rand() % 127,rand() % 63, rand() % 127,rand() % 63);
-		}
-			
-		Display.Buffer_SetPixel(i, 0);
-		Display.Buffer_SetPixel(i, 1);
-		Display.Buffer_SetPixel(i, 2);
-		Display.Buffer_SetPixel(i, 3);
-		Display.Buffer_SetPixel(i, 5);
-		Display.Buffer_SetPixel(i, 7);
-		i++;
-			
-		if(i >= 128)
-		{
-			i = 0;
-		}
-			
-		Display.Buffer_Send();
-	*/
-	
-	
-	/*
-	Звездочки
-	for(int i = 0; i < 2; i++)
+	for (int i = 0; i < AmmountOfPoints; i++)
 	{
-		Display.Buffer_SetPixel(rand() % 127,rand() % 63);
-	}
-	
-	for(int i = 0; i < 220; i++)
-	{
-		Display.Buffer_RemovePixel(rand() % 127,rand() % 63);
+		arrPoints[AmmountOfPoints] = {(float)((rand() % 1280) - 640) / 10.0f, (float)((rand() % 640) - 320)/ 10.0f, (float)(rand() % 100) / 10.0f};
 	}
 
-	Display.Buffer_Send();
-	*/
+	point arrTempPoints[AmmountOfPoints];
 	
-	/*
-	// Вывод функции	
-	// Линии OX, OY
-	Display.Buffer_SetLine(-64, 0, 63, 0);
-	Display.Buffer_SetLine(0, 16, 0, -15);
-			
-	for (float x = -64; x < 64; x += 0.5)
-	{
-		Display.Buffer_SetPixel(x, -13*cos(x/4));
-	}
-			
-	Display.Buffer_Send();
-	*/
+	//// Инициализация и заселение матрицы проекции и вычисление ее компонентов
+	const float zNear = 0.1f;												// znear
+	const float zFar = 10.0f;												// zfar
+	const float q = (float)(zFar)/(float)(zFar - zFar);					// q
+	const float Fov = 100.0f;												// theta (FOV)
+	const float a = (float)64 / (float)128;								// a = h/w
+	const float f = 1.0f / tanf(Fov * 0.5f / 180.0f * 3.14159f);			// f = 1/(tan(theta/2))
+	
+	float projVect[6] = {zNear, zFar, q, Fov, a, f};
 		
+	while(1)
+	{
+		Display.Buffer_Fill(0);
+		
+		for (int i = 0; i < AmmountOfPoints; i++)
+		{
+			proj(arrPoints[i], arrTempPoints[i], projVect);
+			Display.Buffer_SetPixel(arrTempPoints[i].x, arrTempPoints[i].y);
+			arrPoints[i].z -= 0.1;
+			if (arrPoints[i].z <= 0)
+			{
+				arrPoints[i] = {(float)((rand() % 1280) - 640) / 10.0f, (float)((rand() % 640) - 320)/ 10.0f, (float)((float)(rand() % 80) / 10.0f) + 2.0f};
+			}
+		}		
+	
+		Display.Buffer_Send();
+	}
 }
