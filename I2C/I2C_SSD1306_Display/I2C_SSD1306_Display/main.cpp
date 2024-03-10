@@ -4,24 +4,75 @@ int main(void)
 {
 	ssd1306_Display Display(0b01111000, 0, 0);
 	Display.Init();
-	
-	// Звездочки
+	int i = 0;
+
 	while (1)
-	{
-		for(int i = 0; i < 1; i++)
+	{		
+		Display.Buffer_Fill(0);
+		
+		for(int j = 0; j < 3; j++)
 		{
-			Display.Buffer_SetPixel(rand() % 127,rand() % 31);
+			Display.Buffer_SetTriangle(rand() % 127,rand() % 63, rand() % 127,rand() % 63, rand() % 127,rand() % 63);
 		}
 		
-		for(int i = 0; i < 150; i++)
+		Display.Buffer_SetPixel(i, 0);
+		Display.Buffer_SetPixel(i, 1);
+		Display.Buffer_SetPixel(i, 2);
+		Display.Buffer_SetPixel(i, 3);
+		Display.Buffer_SetPixel(i, 5);
+		Display.Buffer_SetPixel(i, 7);
+		i++;
+		
+		if(i >= 128)
 		{
-			Display.Buffer_RemovePixel(rand() % 127,rand() % 31);
+			i = 0;
 		}
 		
 		Display.Buffer_Send();
 	}
 	
 	
+	/*
+	// Тест 10 треугольников
+	
+		Display.Buffer_Fill(0);
+			
+		for(int j = 0; j < 10; j++)
+		{
+			Display.Buffer_SetTriangle(rand() % 127,rand() % 63, rand() % 127,rand() % 63, rand() % 127,rand() % 63);
+		}
+			
+		Display.Buffer_SetPixel(i, 0);
+		Display.Buffer_SetPixel(i, 1);
+		Display.Buffer_SetPixel(i, 2);
+		Display.Buffer_SetPixel(i, 3);
+		Display.Buffer_SetPixel(i, 5);
+		Display.Buffer_SetPixel(i, 7);
+		i++;
+			
+		if(i >= 128)
+		{
+			i = 0;
+		}
+			
+		Display.Buffer_Send();
+	*/
+	
+	
+	/*
+	Звездочки
+	for(int i = 0; i < 2; i++)
+	{
+		Display.Buffer_SetPixel(rand() % 127,rand() % 63);
+	}
+	
+	for(int i = 0; i < 220; i++)
+	{
+		Display.Buffer_RemovePixel(rand() % 127,rand() % 63);
+	}
+
+	Display.Buffer_Send();
+	*/
 	
 	/*
 	// Вывод функции	
