@@ -1,0 +1,21 @@
+		Display.Buffer_Fill(0);
+			
+		for(int j = 0; j < 10; j++)
+		{
+			Display.Buffer_SetTriangle(rand() % 127,rand() % 63, rand() % 127,rand() % 63, rand() % 127,rand() % 63);
+		}
+			
+		Display.Buffer_SetPixel(i, 0);
+		Display.Buffer_SetPixel(i, 1);
+		Display.Buffer_SetPixel(i, 2);
+		Display.Buffer_SetPixel(i, 3);
+		Display.Buffer_SetPixel(i, 5);
+		Display.Buffer_SetPixel(i, 7);
+		i++;
+			
+		if(i >= 128)
+		{
+			i = 0;
+		}
+			
+		Display.Buffer_Send();

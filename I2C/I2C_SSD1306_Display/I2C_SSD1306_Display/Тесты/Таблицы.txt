@@ -1,0 +1,168 @@
+
+int main(void)
+{	
+	ssd1306_Display Display(0b01111000, 0, 0);
+	Display.Init();
+	
+	// Таблица А
+	// "Уголки"
+	// Преназначена для:
+	// 1 - проверки работы побайтной записи непосредственно в буффер памяти
+	// 2 - определения границ и центра экрана
+	Display.Buffer_Fill(0);
+			
+	Display.Buffer[0] = 0b11111111;				// Край (0, 0)
+	Display.Buffer[1] = 0b00000001;
+	Display.Buffer[2] = 0b00000001;
+	Display.Buffer[3] = 0b00000001;
+	Display.Buffer[4] = 0b00000001;
+	Display.Buffer[5] = 0b00000001;
+	Display.Buffer[6] = 0b00000001;
+	Display.Buffer[7] = 0b00000001;
+	
+	Display.Buffer[576] = 0b00000001;			// Центральная точка
+	Display.Buffer[575] = 0b00000001;
+	Display.Buffer[448] = 0b10000000;
+	Display.Buffer[447] = 0b10000000;
+				
+	Display.Buffer[1016] = 0b00000000;			// Край (127, 63)
+	Display.Buffer[1017] = 0b10000000;
+	Display.Buffer[1018] = 0b00000000;
+	Display.Buffer[1019] = 0b10000000;
+	Display.Buffer[1020] = 0b00000000;
+	Display.Buffer[1021] = 0b10000000;
+	Display.Buffer[1022] = 0b00000000;
+	Display.Buffer[1023] = 0b10101010;
+	
+	Display.Buffer[189] = 0b01111110;			// Буква A
+	Display.Buffer[190] = 0b10010000;
+	Display.Buffer[191] = 0b10010000;
+	Display.Buffer[192] = 0b10010000;
+	Display.Buffer[193] = 0b10010000;
+	Display.Buffer[194] = 0b01111110;
+		
+	Display.Buffer_Send();
+
+	
+	// Таблица B
+	// "Шахматы"
+	// Преназначена для:
+	// 1 - проверки работы побайтной записи непосредственно в буффер памяти
+	// 2 - побитовых операций
+	// 3 - проверки работы функций Buffer_SetPixel и Buffer_RemovePixel
+	Display.Buffer_Fill(0b11000011);
+	
+	for (unsigned char i = 0; i < 128; i++)
+	{
+		Display.Buffer[(i * 8) + 0] = Display.Buffer[(i * 8) + 0];
+		Display.Buffer[(i * 8) + 1] = Display.Buffer[(i * 8) + 1];
+		Display.Buffer[(i * 8) + 2] = ~Display.Buffer[(i * 8) + 2];
+		Display.Buffer[(i * 8) + 3] = ~Display.Buffer[(i * 8) + 3];
+		Display.Buffer[(i * 8) + 4] = ~Display.Buffer[(i * 8) + 4];
+		Display.Buffer[(i * 8) + 5] = ~Display.Buffer[(i * 8) + 5];
+		Display.Buffer[(i * 8) + 6] = Display.Buffer[(i * 8) + 6];
+		Display.Buffer[(i * 8) + 7] = Display.Buffer[(i * 8) + 7];
+	}
+	
+	Display.Buffer_RemovePixel(63, 31);
+	Display.Buffer_RemovePixel(64, 31);
+	Display.Buffer_RemovePixel(63, 32);
+	Display.Buffer_RemovePixel(64, 32);
+	
+	for(int x = 58; x < 70; x++)
+	{
+		for(int y = 6; y < 18; y++)
+		{
+			Display.Buffer_RemovePixel(x, y);
+		}
+	}
+	
+	for(int x = 58; x < 70; x++)
+	{
+		Display.Buffer_SetPixel(x, 6);
+		Display.Buffer_SetPixel(x, 17);
+	}
+	
+	for(int y = 6; y < 18; y++)
+	{
+		Display.Buffer_SetPixel(58, y);
+		Display.Buffer_SetPixel(69, y);
+	}
+	
+	Display.Buffer[189] = 0b11111110;			// Буква B
+	Display.Buffer[190] = 0b10010010;
+	Display.Buffer[191] = 0b10010010;
+	Display.Buffer[192] = 0b10010010;
+	Display.Buffer[193] = 0b10010010;
+	Display.Buffer[194] = 0b01101100;
+		
+	Display.Buffer_Send();
+
+	
+	// Таблица C
+	// "Точки"
+	// Преназначена для:
+	// 1 - проверки работы побайтной записи непосредственно в буффер памяти
+	// 2 - проверки работы функций Buffer_SetPixel
+	Display.Buffer_Fill(0);
+				
+	for (unsigned char x = 0; x < 16; x++)		// Задание точек
+	{
+		for (unsigned char y = 0; y < 16; y++)
+		{
+			Display.Buffer_SetPixel((x * 8), (y * 8));
+			Display.Buffer_SetPixel((x * 8) + 7, (y * 8));
+			Display.Buffer_SetPixel((x * 8), (y * 8) + 7);
+			Display.Buffer_SetPixel((x * 8) + 7, (y * 8) + 7);
+		}
+	}
+							
+	Display.Buffer[189] = 0b01111100;			// Буква C
+	Display.Buffer[190] = 0b10000010;
+	Display.Buffer[191] = 0b10000010;
+	Display.Buffer[192] = 0b10000010;
+	Display.Buffer[193] = 0b10000010;
+	Display.Buffer[194] = 0b01000100;
+	
+	Display.Buffer[319] = 0b10000000;
+	Display.Buffer[320] = 0b10000000;
+	
+	Display.Buffer[63] = 0b00000001;
+	Display.Buffer[64] = 0b00000001;	
+	
+	Display.Buffer_Send();
+	
+
+	// Таблица D
+	// "Линии"
+	// Преназначена для:
+	// 1 - проверки работы функций Buffer_SetLine
+	Display.Buffer_Fill(0);
+	
+	Display.Buffer_SetPixel(63, 31);			// Центральная точка
+	Display.Buffer_SetPixel(63, 32);
+	Display.Buffer_SetPixel(64, 31);
+	Display.Buffer_SetPixel(64, 32);	
+	
+	Display.Buffer_SetLine(0, 0, 0, 63);		// Границы экрана
+	Display.Buffer_SetLine(127, 0, 127, 63);
+	Display.Buffer_SetLine(0, 0, 127, 0);
+	Display.Buffer_SetLine(0, 63, 127, 63);
+
+	Display.Buffer_SetLine(0, 0, 63, 63);		// Крестики
+	Display.Buffer_SetLine(0, 63, 63, 0);
+	Display.Buffer_SetLine(64, 0, 127, 63);
+	Display.Buffer_SetLine(64, 63, 127, 0);
+	
+	Display.Buffer_SetLine(0, 0, 127, 63);
+	Display.Buffer_SetLine(0, 63, 127, 0);
+	
+	Display.Buffer[189] = 0b11111110;			// Буква D
+	Display.Buffer[190] = 0b10000010;
+	Display.Buffer[191] = 0b10000010;
+	Display.Buffer[192] = 0b10000010;
+	Display.Buffer[193] = 0b10000010;
+	Display.Buffer[194] = 0b01111100;
+	
+	Display.Buffer_Send();
+}
