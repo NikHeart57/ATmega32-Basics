@@ -1,0 +1,33 @@
+		int a[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+		
+		Display.Xpos = 0;
+		Display.Ypos = 0;
+		Display.Buffer_Fill(0);
+		
+		Display.Print("NUMBER: ");
+		Display.PrintInt(rand() % 65535);
+		
+		/*
+		Display.Print("A[0]:");
+		Display.PrintInt(a[0]);
+		Display.Print("\n");
+		
+		Display.Print("  PA:");
+		Display.PrintInt((int)(a));
+		Display.Print("\n");
+
+		Display.Print("A[1]:");
+		Display.PrintInt(a[1]);
+		Display.Print("\n");
+		
+		Display.Print("  PA:");
+		Display.PrintInt((int)(a + 1));
+		Display.Print("\n");
+		Display.Print("\n");
+		
+		Display.Print("PA+2:");
+		Display.PrintInt((int)*(a + 2));
+		Display.Print("\n");	
+		*/
+		Display.Buffer_Send();
+		_delay_ms(500);
