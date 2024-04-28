@@ -1,105 +1,165 @@
+#define F_CPU 14745600UL
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include <stdlib.h>
+#include <math.h>
 #include "main.h"
 using namespace std;
 
-void setup()
-{
-	DDRA = 0x00;			// (выход - 1; вход - 0)
-		
-	ADCSRA |= (1 << ADEN);                                // Разрешаем работу АЦП (1)
-	ADCSRA |= (1 << ADSC);                                // Запуск АЦП (1)
-	ADCSRA |= (1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0);     // Задаю делитель N для определения частоты дискретизации f_ацп = f_цпу / N;
-	// при ADPS0..2 = 111       => f_ацп = 7372800 / 128 = 57600Гц
-	ADMUX  |= (1 << REFS1)|(1 << REFS0);                  // Задаю ИОН, REFS0..1 = 11 => внутренний ИОН, U_ион = 2,56В
-	ADMUX  |= (0 << ADLAR);                               // Правосторонее выравнивание ADLAR = 0; ADCH, ADCL
-	ADMUX  |= (0 << MUX4)|(0 << MUX3)|(0 << MUX2)|(0 << MUX1)|(0 << MUX0);  // Выбор пина АЦП; MX0..4 = 00000 => ADC0(PA0);
-	
-}
+unsigned char sec	= (0 << 4)|(0 << 0);
+unsigned char min	= (1 << 4)|(1 << 0);
+unsigned char hour	= (2 << 4)|(2 << 0);
+unsigned char day	= (7 << 0);				// День нед
+unsigned char date	= (1 << 4)|(4 << 0);	// День мес
+unsigned char month	= (0 << 4)|(4 << 0);	// Месяц
+unsigned char year	= (2 << 4)|(4 << 0);	// Год
+
+
+
+void Read(void);
+void Write(unsigned char sec, unsigned char min, unsigned char hour, unsigned char day, unsigned char date, unsigned char month, unsigned char year);
+
+
 
 int main(void)
 {	
-	setup();
-	
+	_delay_ms(1000);
 	ssd1306_Display Display(0b01111000, 0, 0);
 	Display.Init();
 	Display.Buffer_Fill(0);
+	_delay_ms(100);
+
+	//Write(sec, min, hour, day, date, month, year);
 	
-	int x = 0;
-	int xOld = 0;
-	int yOld = 0;
+	while(1)
+	{
+		Display.Buffer_Fill(0);
 		
-	while (1)
-	{	
-		_delay_ms(50);
-		if (ADCSRA & (1 << ADIF))        // Если флаг ADIF = 0 (т.е.ADCSRA&(1<<ADIF)=true) значит преобразование выполнилось
+		// Дата
+		Display.Xcursor = 4;
+		Display.Ycursor = 2;
+		
+		Display.PrintNum(20);
+		Display.PrintNum(year >> 4);
+		Display.PrintNum(year &= 0b00001111);
+		Display.PrintStr(".");
+
+		Display.PrintNum(month >> 4);
+		Display.PrintNum(month &= 0b00001111);
+		Display.PrintStr(".");
+				
+		Display.PrintNum(date >> 4);
+		Display.PrintNum(date &= 0b00001111);
+		Display.PrintStr(" ");	
+		
+		// День недели	
+		switch (day &= 0b00001111)
 		{
-			//PORTD = ADCL;                // Вывод состояния регистра ADC в порты, чтобы наглядно видеть как работает АЦП
-			//PORTC = ADCH;                //
-			ADCSRA |= (1 << ADIF);       // Установка флага ADIF, чтобы позволить дальнейшую работу АЦП
-			ADCSRA |= (1 << ADSC);       // Запуск АЦП
-		}
-		
-		Display.Xposconsole = 0;
-		Display.Yposconsole = 0;
-		
-		float mvoltage = (ADC * 2.5f);
-		
-		if(mvoltage >= 1000)
-		{
-			Display.PrintInt((unsigned int)(mvoltage / 1000));
-			Display.Print(",");
-			Display.PrintInt((unsigned int)(mvoltage - 1000));
-			Display.Print("V");
-		}
-		else if(mvoltage < 1000)
-		{
-			Display.PrintInt((unsigned int)(0));
-			Display.Print(",");
-			Display.PrintInt((unsigned int)(mvoltage));
-			Display.Print("V");
-		}
-		
-		//int pixel = ((ADC >> 4) * 5) - 128;
-		
-		int pixel = (ADC >> 4);
-		
-		if (pixel > 0 && pixel < 127)
-		{
-			Display.Buffer_SetLine(xOld, yOld, x, pixel);
-		}
-		else if (pixel <= 0)
-		{
-			Display.Buffer_SetLine(xOld, yOld, x, 0);
-		}
-		else
-		{
-			Display.Buffer_SetLine(xOld, yOld, x, 127);
+			case 1:
+				Display.PrintStr("MON");
+			break;
+			
+			case 2:
+				Display.PrintStr("TUE");
+			break;
+			
+			case 3:
+				Display.PrintStr("WED");
+			break;
+			
+			case 4:
+				Display.PrintStr("THU");
+			break;
+			
+			case 5:
+				Display.PrintStr("FRI");
+			break;
+			
+			case 6:
+				Display.PrintStr("SAT");
+			break;
+			
+			case 7:
+				Display.PrintStr("SUN");
+			break;
+			
+			default:
+				Display.PrintStr("ERR");
+			break;
 		}
 
-		xOld = x;
-		x++;
-		yOld = pixel;
+		Display.PrintStr("\n\n");	
+	
 		
-		if (x > 128)
-		{
-			Display.Buffer_Fill(0);
-			for (int x = 0; x < 16; x++)
-			{
-				for (int y = 0; y < 8; y++)
-				{
-					Display.Buffer_SetPixel(x * 8, y * 8);
-				}
-			}
-			
-			for (int x = 0; x < 32; x++)
-			{
-				Display.Buffer_SetPixel(x * 4, 32);
-			}
-			
-			x = 0;
-			xOld = 0;
-		}
+		// Время
+		Display.Xcursor = 7;
 		
+		Display.PrintNum(hour >> 4);
+		Display.PrintNum(hour &= 0b00001111);
+		Display.PrintStr(":");
+				
+		Display.PrintNum(min >> 4);
+		Display.PrintNum(min &= 0b00001111);
+		Display.PrintStr(":");
+		
+		Display.PrintNum(sec >> 4);
+		Display.PrintNum(sec &= 0b00001111);
+		
+		_delay_ms(150);
 		Display.Buffer_Send();
-
+		_delay_ms(150);
+		Read();
+		_delay_ms(150);
 	}
+}
+
+
+
+void Write(unsigned char sec, unsigned char min, unsigned char hour, unsigned char day, unsigned char date,  unsigned char month, unsigned char year)
+{
+	// Адрес МК						0b10101010
+	// Адрес часов слейв запись W	0b11010000
+	// Адрес часов слейв чтение	R	0b11010001
+	
+	i2c_MT_init();					// Инициализация мастера				// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+	i2c_MT_start();					// Задание стартового условия мастером	// 00001 = 0x08 - A START condition has been transmitted
+	i2c_MT_send(0b11010000);		// Передача адреса						// 00011 = 0x18 - SLA+W has been transmitted;		ACK has been received
+	i2c_MT_send(0x00);				// Передача данных(адреса записи)		// 00101 = 0x28 - Data byte has been transmitted;	ACK has been received
+	// Передача данных DATA			// 00101 = 0x28 - Data byte has been transmitted;	ACK has been received
+	i2c_MT_send(sec);				// 0x00	7-CH	6-10Sec		5-10Sec		4-10Sec		3-Sec	2-Sec	1-Sec	0-Sec	(CH-0 - вкл осцилятор, CH-1 - вЫкл осцилятор)
+	i2c_MT_send(min);				// 0x01	7-0		6-10Min		5-10Min		4-10Min		3-Min	2-Min	1-Min	0-Min
+	i2c_MT_send(hour);				// 0x02	7-0		6-12/24		5-10H/AMPM	4-10Hour	3-Hour	2-Hour	1-Hour	0-Hour
+	i2c_MT_send(day);				// 0x03	7-0		6-0			5-0			4-0			3-0		2-Day	1-Day	0-Day	(День недели)
+	i2c_MT_send(date);				// 0x04	7-0		6-0			5-10Date	4-10Date	3-Date	2-Date	1-Date	0-Date	(День месяца)
+	i2c_MT_send(month);				// 0x05	7-0		6-0			5-0			4-10Month	3-Month	2-Month	1-Month	0-Month
+	i2c_MT_send(year);				// 0x06	7-10Y	6-10Y		5-10Y		4-10Y		3-Y		2-Y		1-Y		0-Y
+	i2c_MT_send(0b00010000);		// 0x07	7-OUT	6-0			5-0			4-SQWE		3-0		2-0		1-RS1	0-RS0	(OUT - логика на выходе; SQWE - генератор на выходе; RS1..0 - прескелереры частоты генератора SQWE)
+	
+	i2c_MT_stop();					// Стоп от мастера						// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+}
+
+void Read(void)
+{
+	// Адрес МК						0b10101010
+	// Адрес часов слейв запись		0b11010000
+	// Адрес часов слейв чтение		0b11010001
+	
+	// ===== Чтение с указанием стартового адреса с которого начинается чтение =====
+	i2c_MR_init();					// Инициализация мастера				// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
+	i2c_MR_start();					// Задание стартового условия мастером	// 00001 = 0x08 - A START condition has been transmitted
+	i2c_MR_send(0b11010000);		// Передача адреса слэйва
+	i2c_MR_send(0x00);				// Передача адреса ячейки
+	i2c_MR_start();					// Повторный старт
+	i2c_MR_send(0b11010001);		// Отправка адреса слэйва				// 01000 = 0x40 - SLA+R has been transmitted;	ACK has been received
+
+	sec		= i2c_MR_Read();		// Чтение данных   ACK					// 01010 = Data byte has been received;			ACK has been returned
+	min		= i2c_MR_Read();
+	hour	= i2c_MR_Read();
+	day		= i2c_MR_Read();
+	date	= i2c_MR_Read();
+	month	= i2c_MR_Read();
+	year	= i2c_MR_ReadLast();	// Чтение данных NOACK					// 01011 = 0x58 - Data byte has been received;	NOT ACK has been returned
+	
+	i2c_MR_stop();					// Стоп от мастера						// 11111 = 0xf8 - No relevant state information	available; TWINT = “0”
 }

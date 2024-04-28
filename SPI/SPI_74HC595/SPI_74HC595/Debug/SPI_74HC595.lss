@@ -3,55 +3,55 @@ SPI_74HC595.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000002b0  00000000  00000000  00000074  2**1
+  0 .text         000000d4  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000004  00800060  000002b0  00000324  2**0
+  1 .data         00000000  00800060  00800060  00000128  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  00000328  2**0
+  2 .comment      00000030  00000000  00000000  00000128  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000358  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000158  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000030  00000000  00000000  00000394  2**0
+  4 .debug_aranges 00000030  00000000  00000000  00000194  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000682  00000000  00000000  000003c4  2**0
+  5 .debug_info   000006ad  00000000  00000000  000001c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000005d8  00000000  00000000  00000a46  2**0
+  6 .debug_abbrev 000005e5  00000000  00000000  00000871  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000029d  00000000  00000000  0000101e  2**0
+  7 .debug_line   000002a7  00000000  00000000  00000e56  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000044  00000000  00000000  000012bc  2**2
+  8 .debug_frame  00000044  00000000  00000000  00001100  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0000039b  00000000  00000000  00001300  2**0
+  9 .debug_str    00000396  00000000  00000000  00001144  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000002d  00000000  00000000  0000169b  2**0
+ 10 .debug_loc    0000009d  00000000  00000000  000014da  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000020  00000000  00000000  000016c8  2**0
+ 11 .debug_ranges 00000020  00000000  00000000  00001577  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
-   4:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-   8:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-   c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  10:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  14:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  18:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  1c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  20:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  24:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  28:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  2c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  30:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  34:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  38:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  3c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  40:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  44:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  48:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  4c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
-  50:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
 
 00000054 <__ctors_end>:
   54:	11 24       	eor	r1, r1
@@ -60,375 +60,111 @@ Disassembly of section .text:
   5a:	d8 e0       	ldi	r29, 0x08	; 8
   5c:	de bf       	out	0x3e, r29	; 62
   5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 50 00 	call	0xa0	; 0xa0 <main>
+  64:	0c 94 68 00 	jmp	0xd0	; 0xd0 <_exit>
 
-00000060 <__do_copy_data>:
-  60:	10 e0       	ldi	r17, 0x00	; 0
-  62:	a0 e6       	ldi	r26, 0x60	; 96
-  64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e0 eb       	ldi	r30, 0xB0	; 176
-  68:	f2 e0       	ldi	r31, 0x02	; 2
-  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
-  6c:	05 90       	lpm	r0, Z+
-  6e:	0d 92       	st	X+, r0
-  70:	a4 36       	cpi	r26, 0x64	; 100
-  72:	b1 07       	cpc	r27, r17
-  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
-  76:	0e 94 5b 00 	call	0xb6	; 0xb6 <main>
-  7a:	0c 94 56 01 	jmp	0x2ac	; 0x2ac <_exit>
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
-0000007e <__bad_interrupt>:
-  7e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
-
-00000082 <_Z5setupv>:
+0000006c <_Z5setupv>:
 
 
 void setup(void)
 {
 	// Настройка пина защёлки (Вместо этого пина можно использовать пин SS или любой другой, по желанию)
 	DDRC  |= (1 << LATCH);									// Выходы (1)
-  82:	84 b3       	in	r24, 0x14	; 20
-  84:	81 60       	ori	r24, 0x01	; 1
-  86:	84 bb       	out	0x14, r24	; 20
+  6c:	84 b3       	in	r24, 0x14	; 20
+  6e:	81 60       	ori	r24, 0x01	; 1
+  70:	84 bb       	out	0x14, r24	; 20
 	PORTC |= (1 << LATCH);									// Изначально высокий уровень LATCH (ST_CP)
-  88:	85 b3       	in	r24, 0x15	; 21
-  8a:	81 60       	ori	r24, 0x01	; 1
-  8c:	85 bb       	out	0x15, r24	; 21
+  72:	85 b3       	in	r24, 0x15	; 21
+  74:	81 60       	ori	r24, 0x01	; 1
+  76:	85 bb       	out	0x15, r24	; 21
 	
 	// Настройка пинов SPI
    DDRB  |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(0 << MISO);	// Обязательная настройка! Для всех 4-х пинов SPI!
-  8e:	87 b3       	in	r24, 0x17	; 23
-  90:	80 6b       	ori	r24, 0xB0	; 176
-  92:	87 bb       	out	0x17, r24	; 23
+  78:	87 b3       	in	r24, 0x17	; 23
+  7a:	80 6b       	ori	r24, 0xB0	; 176
+  7c:	87 bb       	out	0x17, r24	; 23
    PORTB |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(1 << MISO);	//
-  94:	88 b3       	in	r24, 0x18	; 24
-  96:	80 6f       	ori	r24, 0xF0	; 240
-  98:	88 bb       	out	0x18, r24	; 24
+  7e:	88 b3       	in	r24, 0x18	; 24
+  80:	80 6f       	ori	r24, 0xF0	; 240
+  82:	88 bb       	out	0x18, r24	; 24
 
    // Разрешение SPI (SPE), старший бит вперед (DORD), мастер (MSTR), режим 0 (CPOL, CPHA), делитель частоты - 128 (SPR1, SPR0)
    SPCR = (1 << SPE)|(0 << DORD)|(1 << MSTR)|(0 << CPOL)|(0 << CPHA)|(1 << SPR1)|(1 << SPR0);
-  9a:	83 e5       	ldi	r24, 0x53	; 83
-  9c:	8d b9       	out	0x0d, r24	; 13
+  84:	83 e5       	ldi	r24, 0x53	; 83
+  86:	8d b9       	out	0x0d, r24	; 13
    SPSR = (0 << SPI2X);
-  9e:	1e b8       	out	0x0e, r1	; 14
-  a0:	08 95       	ret
+  88:	1e b8       	out	0x0e, r1	; 14
+  8a:	08 95       	ret
 
-000000a2 <_Z13SPI_WriteByteh>:
+0000008c <_Z13SPI_WriteByteh>:
 }
 
 void SPI_WriteByte(uint8_t data)
 {
 	//PORTB &= ~(1 << SS);				// Можно использовать любой пин для вызова устройства
 	PORTC &= ~(1 << LATCH);		
-  a2:	95 b3       	in	r25, 0x15	; 21
-  a4:	9e 7f       	andi	r25, 0xFE	; 254
-  a6:	95 bb       	out	0x15, r25	; 21
+  8c:	95 b3       	in	r25, 0x15	; 21
+  8e:	9e 7f       	andi	r25, 0xFE	; 254
+  90:	95 bb       	out	0x15, r25	; 21
 	SPDR = data;
-  a8:	8f b9       	out	0x0f, r24	; 15
+  92:	8f b9       	out	0x0f, r24	; 15
 	while(!(SPSR & (1 << SPIF)));
-  aa:	77 9b       	sbis	0x0e, 7	; 14
-  ac:	fe cf       	rjmp	.-4      	; 0xaa <_Z13SPI_WriteByteh+0x8>
+  94:	77 9b       	sbis	0x0e, 7	; 14
+  96:	fe cf       	rjmp	.-4      	; 0x94 <_Z13SPI_WriteByteh+0x8>
 	//PORTB |= (1 << SS);
 	PORTC |= (1 << LATCH);
-  ae:	85 b3       	in	r24, 0x15	; 21
-  b0:	81 60       	ori	r24, 0x01	; 1
-  b2:	85 bb       	out	0x15, r24	; 21
-  b4:	08 95       	ret
+  98:	85 b3       	in	r24, 0x15	; 21
+  9a:	81 60       	ori	r24, 0x01	; 1
+  9c:	85 bb       	out	0x15, r24	; 21
+  9e:	08 95       	ret
 
-000000b6 <main>:
+000000a0 <main>:
 }
 
 int main(void)
 {
 	setup();
-  b6:	0e 94 41 00 	call	0x82	; 0x82 <_Z5setupv>
+  a0:	0e 94 36 00 	call	0x6c	; 0x6c <_Z5setupv>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-  ba:	2f ef       	ldi	r18, 0xFF	; 255
-  bc:	8f e7       	ldi	r24, 0x7F	; 127
-  be:	94 e0       	ldi	r25, 0x04	; 4
-  c0:	21 50       	subi	r18, 0x01	; 1
-  c2:	80 40       	sbci	r24, 0x00	; 0
-  c4:	90 40       	sbci	r25, 0x00	; 0
-  c6:	e1 f7       	brne	.-8      	; 0xc0 <main+0xa>
-  c8:	00 c0       	rjmp	.+0      	; 0xca <main+0x14>
-  ca:	00 00       	nop
+  a4:	2f ef       	ldi	r18, 0xFF	; 255
+  a6:	8f e7       	ldi	r24, 0x7F	; 127
+  a8:	94 e0       	ldi	r25, 0x04	; 4
+  aa:	21 50       	subi	r18, 0x01	; 1
+  ac:	80 40       	sbci	r24, 0x00	; 0
+  ae:	90 40       	sbci	r25, 0x00	; 0
+  b0:	e1 f7       	brne	.-8      	; 0xaa <main+0xa>
+  b2:	00 c0       	rjmp	.+0      	; 0xb4 <main+0x14>
+  b4:	00 00       	nop
+	char i = 0;
+  b6:	80 e0       	ldi	r24, 0x00	; 0
+  b8:	ef ef       	ldi	r30, 0xFF	; 255
+  ba:	ff e8       	ldi	r31, 0x8F	; 143
+  bc:	31 97       	sbiw	r30, 0x01	; 1
+  be:	f1 f7       	brne	.-4      	; 0xbc <main+0x1c>
+  c0:	00 c0       	rjmp	.+0      	; 0xc2 <main+0x22>
+  c2:	00 00       	nop
 	_delay_ms(100);						// Не обязательно
 	
 	while(1)
 	{
-		SPI_WriteByte(rand() % 255);
-  cc:	0e 94 e3 00 	call	0x1c6	; 0x1c6 <rand>
-  d0:	6f ef       	ldi	r22, 0xFF	; 255
-  d2:	70 e0       	ldi	r23, 0x00	; 0
-  d4:	0e 94 6f 00 	call	0xde	; 0xde <__divmodhi4>
-  d8:	0e 94 51 00 	call	0xa2	; 0xa2 <_Z13SPI_WriteByteh>
-  dc:	f7 cf       	rjmp	.-18     	; 0xcc <main+0x16>
+		_delay_ms(10);	
+		SPI_WriteByte(i++);
+  c4:	c1 e0       	ldi	r28, 0x01	; 1
+  c6:	c8 0f       	add	r28, r24
+  c8:	0e 94 46 00 	call	0x8c	; 0x8c <_Z13SPI_WriteByteh>
+  cc:	8c 2f       	mov	r24, r28
+  ce:	f4 cf       	rjmp	.-24     	; 0xb8 <main+0x18>
 
-000000de <__divmodhi4>:
-  de:	97 fb       	bst	r25, 7
-  e0:	07 2e       	mov	r0, r23
-  e2:	16 f4       	brtc	.+4      	; 0xe8 <__divmodhi4+0xa>
-  e4:	00 94       	com	r0
-  e6:	07 d0       	rcall	.+14     	; 0xf6 <__divmodhi4_neg1>
-  e8:	77 fd       	sbrc	r23, 7
-  ea:	09 d0       	rcall	.+18     	; 0xfe <__divmodhi4_neg2>
-  ec:	0e 94 83 00 	call	0x106	; 0x106 <__udivmodhi4>
-  f0:	07 fc       	sbrc	r0, 7
-  f2:	05 d0       	rcall	.+10     	; 0xfe <__divmodhi4_neg2>
-  f4:	3e f4       	brtc	.+14     	; 0x104 <__divmodhi4_exit>
+000000d0 <_exit>:
+  d0:	f8 94       	cli
 
-000000f6 <__divmodhi4_neg1>:
-  f6:	90 95       	com	r25
-  f8:	81 95       	neg	r24
-  fa:	9f 4f       	sbci	r25, 0xFF	; 255
-  fc:	08 95       	ret
-
-000000fe <__divmodhi4_neg2>:
-  fe:	70 95       	com	r23
- 100:	61 95       	neg	r22
- 102:	7f 4f       	sbci	r23, 0xFF	; 255
-
-00000104 <__divmodhi4_exit>:
- 104:	08 95       	ret
-
-00000106 <__udivmodhi4>:
- 106:	aa 1b       	sub	r26, r26
- 108:	bb 1b       	sub	r27, r27
- 10a:	51 e1       	ldi	r21, 0x11	; 17
- 10c:	07 c0       	rjmp	.+14     	; 0x11c <__udivmodhi4_ep>
-
-0000010e <__udivmodhi4_loop>:
- 10e:	aa 1f       	adc	r26, r26
- 110:	bb 1f       	adc	r27, r27
- 112:	a6 17       	cp	r26, r22
- 114:	b7 07       	cpc	r27, r23
- 116:	10 f0       	brcs	.+4      	; 0x11c <__udivmodhi4_ep>
- 118:	a6 1b       	sub	r26, r22
- 11a:	b7 0b       	sbc	r27, r23
-
-0000011c <__udivmodhi4_ep>:
- 11c:	88 1f       	adc	r24, r24
- 11e:	99 1f       	adc	r25, r25
- 120:	5a 95       	dec	r21
- 122:	a9 f7       	brne	.-22     	; 0x10e <__udivmodhi4_loop>
- 124:	80 95       	com	r24
- 126:	90 95       	com	r25
- 128:	bc 01       	movw	r22, r24
- 12a:	cd 01       	movw	r24, r26
- 12c:	08 95       	ret
-
-0000012e <do_rand>:
- 12e:	8f 92       	push	r8
- 130:	9f 92       	push	r9
- 132:	af 92       	push	r10
- 134:	bf 92       	push	r11
- 136:	cf 92       	push	r12
- 138:	df 92       	push	r13
- 13a:	ef 92       	push	r14
- 13c:	ff 92       	push	r15
- 13e:	cf 93       	push	r28
- 140:	df 93       	push	r29
- 142:	ec 01       	movw	r28, r24
- 144:	68 81       	ld	r22, Y
- 146:	79 81       	ldd	r23, Y+1	; 0x01
- 148:	8a 81       	ldd	r24, Y+2	; 0x02
- 14a:	9b 81       	ldd	r25, Y+3	; 0x03
- 14c:	61 15       	cp	r22, r1
- 14e:	71 05       	cpc	r23, r1
- 150:	81 05       	cpc	r24, r1
- 152:	91 05       	cpc	r25, r1
- 154:	21 f4       	brne	.+8      	; 0x15e <do_rand+0x30>
- 156:	64 e2       	ldi	r22, 0x24	; 36
- 158:	79 ed       	ldi	r23, 0xD9	; 217
- 15a:	8b e5       	ldi	r24, 0x5B	; 91
- 15c:	97 e0       	ldi	r25, 0x07	; 7
- 15e:	2d e1       	ldi	r18, 0x1D	; 29
- 160:	33 ef       	ldi	r19, 0xF3	; 243
- 162:	41 e0       	ldi	r20, 0x01	; 1
- 164:	50 e0       	ldi	r21, 0x00	; 0
- 166:	0e 94 f3 00 	call	0x1e6	; 0x1e6 <__divmodsi4>
- 16a:	49 01       	movw	r8, r18
- 16c:	5a 01       	movw	r10, r20
- 16e:	9b 01       	movw	r18, r22
- 170:	ac 01       	movw	r20, r24
- 172:	a7 ea       	ldi	r26, 0xA7	; 167
- 174:	b1 e4       	ldi	r27, 0x41	; 65
- 176:	0e 94 12 01 	call	0x224	; 0x224 <__muluhisi3>
- 17a:	6b 01       	movw	r12, r22
- 17c:	7c 01       	movw	r14, r24
- 17e:	ac ee       	ldi	r26, 0xEC	; 236
- 180:	b4 ef       	ldi	r27, 0xF4	; 244
- 182:	a5 01       	movw	r20, r10
- 184:	94 01       	movw	r18, r8
- 186:	0e 94 20 01 	call	0x240	; 0x240 <__mulohisi3>
- 18a:	dc 01       	movw	r26, r24
- 18c:	cb 01       	movw	r24, r22
- 18e:	8c 0d       	add	r24, r12
- 190:	9d 1d       	adc	r25, r13
- 192:	ae 1d       	adc	r26, r14
- 194:	bf 1d       	adc	r27, r15
- 196:	b7 ff       	sbrs	r27, 7
- 198:	03 c0       	rjmp	.+6      	; 0x1a0 <do_rand+0x72>
- 19a:	01 97       	sbiw	r24, 0x01	; 1
- 19c:	a1 09       	sbc	r26, r1
- 19e:	b0 48       	sbci	r27, 0x80	; 128
- 1a0:	88 83       	st	Y, r24
- 1a2:	99 83       	std	Y+1, r25	; 0x01
- 1a4:	aa 83       	std	Y+2, r26	; 0x02
- 1a6:	bb 83       	std	Y+3, r27	; 0x03
- 1a8:	9f 77       	andi	r25, 0x7F	; 127
- 1aa:	df 91       	pop	r29
- 1ac:	cf 91       	pop	r28
- 1ae:	ff 90       	pop	r15
- 1b0:	ef 90       	pop	r14
- 1b2:	df 90       	pop	r13
- 1b4:	cf 90       	pop	r12
- 1b6:	bf 90       	pop	r11
- 1b8:	af 90       	pop	r10
- 1ba:	9f 90       	pop	r9
- 1bc:	8f 90       	pop	r8
- 1be:	08 95       	ret
-
-000001c0 <rand_r>:
- 1c0:	0e 94 97 00 	call	0x12e	; 0x12e <do_rand>
- 1c4:	08 95       	ret
-
-000001c6 <rand>:
- 1c6:	80 e6       	ldi	r24, 0x60	; 96
- 1c8:	90 e0       	ldi	r25, 0x00	; 0
- 1ca:	0e 94 97 00 	call	0x12e	; 0x12e <do_rand>
- 1ce:	08 95       	ret
-
-000001d0 <srand>:
- 1d0:	a0 e0       	ldi	r26, 0x00	; 0
- 1d2:	b0 e0       	ldi	r27, 0x00	; 0
- 1d4:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__DATA_REGION_ORIGIN__>
- 1d8:	90 93 61 00 	sts	0x0061, r25	; 0x800061 <__DATA_REGION_ORIGIN__+0x1>
- 1dc:	a0 93 62 00 	sts	0x0062, r26	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
- 1e0:	b0 93 63 00 	sts	0x0063, r27	; 0x800063 <__DATA_REGION_ORIGIN__+0x3>
- 1e4:	08 95       	ret
-
-000001e6 <__divmodsi4>:
- 1e6:	05 2e       	mov	r0, r21
- 1e8:	97 fb       	bst	r25, 7
- 1ea:	1e f4       	brtc	.+6      	; 0x1f2 <__divmodsi4+0xc>
- 1ec:	00 94       	com	r0
- 1ee:	0e 94 0a 01 	call	0x214	; 0x214 <__negsi2>
- 1f2:	57 fd       	sbrc	r21, 7
- 1f4:	07 d0       	rcall	.+14     	; 0x204 <__divmodsi4_neg2>
- 1f6:	0e 94 25 01 	call	0x24a	; 0x24a <__udivmodsi4>
- 1fa:	07 fc       	sbrc	r0, 7
- 1fc:	03 d0       	rcall	.+6      	; 0x204 <__divmodsi4_neg2>
- 1fe:	4e f4       	brtc	.+18     	; 0x212 <__divmodsi4_exit>
- 200:	0c 94 0a 01 	jmp	0x214	; 0x214 <__negsi2>
-
-00000204 <__divmodsi4_neg2>:
- 204:	50 95       	com	r21
- 206:	40 95       	com	r20
- 208:	30 95       	com	r19
- 20a:	21 95       	neg	r18
- 20c:	3f 4f       	sbci	r19, 0xFF	; 255
- 20e:	4f 4f       	sbci	r20, 0xFF	; 255
- 210:	5f 4f       	sbci	r21, 0xFF	; 255
-
-00000212 <__divmodsi4_exit>:
- 212:	08 95       	ret
-
-00000214 <__negsi2>:
- 214:	90 95       	com	r25
- 216:	80 95       	com	r24
- 218:	70 95       	com	r23
- 21a:	61 95       	neg	r22
- 21c:	7f 4f       	sbci	r23, 0xFF	; 255
- 21e:	8f 4f       	sbci	r24, 0xFF	; 255
- 220:	9f 4f       	sbci	r25, 0xFF	; 255
- 222:	08 95       	ret
-
-00000224 <__muluhisi3>:
- 224:	0e 94 47 01 	call	0x28e	; 0x28e <__umulhisi3>
- 228:	a5 9f       	mul	r26, r21
- 22a:	90 0d       	add	r25, r0
- 22c:	b4 9f       	mul	r27, r20
- 22e:	90 0d       	add	r25, r0
- 230:	a4 9f       	mul	r26, r20
- 232:	80 0d       	add	r24, r0
- 234:	91 1d       	adc	r25, r1
- 236:	11 24       	eor	r1, r1
- 238:	08 95       	ret
-
-0000023a <__mulshisi3>:
- 23a:	b7 ff       	sbrs	r27, 7
- 23c:	0c 94 12 01 	jmp	0x224	; 0x224 <__muluhisi3>
-
-00000240 <__mulohisi3>:
- 240:	0e 94 12 01 	call	0x224	; 0x224 <__muluhisi3>
- 244:	82 1b       	sub	r24, r18
- 246:	93 0b       	sbc	r25, r19
- 248:	08 95       	ret
-
-0000024a <__udivmodsi4>:
- 24a:	a1 e2       	ldi	r26, 0x21	; 33
- 24c:	1a 2e       	mov	r1, r26
- 24e:	aa 1b       	sub	r26, r26
- 250:	bb 1b       	sub	r27, r27
- 252:	fd 01       	movw	r30, r26
- 254:	0d c0       	rjmp	.+26     	; 0x270 <__udivmodsi4_ep>
-
-00000256 <__udivmodsi4_loop>:
- 256:	aa 1f       	adc	r26, r26
- 258:	bb 1f       	adc	r27, r27
- 25a:	ee 1f       	adc	r30, r30
- 25c:	ff 1f       	adc	r31, r31
- 25e:	a2 17       	cp	r26, r18
- 260:	b3 07       	cpc	r27, r19
- 262:	e4 07       	cpc	r30, r20
- 264:	f5 07       	cpc	r31, r21
- 266:	20 f0       	brcs	.+8      	; 0x270 <__udivmodsi4_ep>
- 268:	a2 1b       	sub	r26, r18
- 26a:	b3 0b       	sbc	r27, r19
- 26c:	e4 0b       	sbc	r30, r20
- 26e:	f5 0b       	sbc	r31, r21
-
-00000270 <__udivmodsi4_ep>:
- 270:	66 1f       	adc	r22, r22
- 272:	77 1f       	adc	r23, r23
- 274:	88 1f       	adc	r24, r24
- 276:	99 1f       	adc	r25, r25
- 278:	1a 94       	dec	r1
- 27a:	69 f7       	brne	.-38     	; 0x256 <__udivmodsi4_loop>
- 27c:	60 95       	com	r22
- 27e:	70 95       	com	r23
- 280:	80 95       	com	r24
- 282:	90 95       	com	r25
- 284:	9b 01       	movw	r18, r22
- 286:	ac 01       	movw	r20, r24
- 288:	bd 01       	movw	r22, r26
- 28a:	cf 01       	movw	r24, r30
- 28c:	08 95       	ret
-
-0000028e <__umulhisi3>:
- 28e:	a2 9f       	mul	r26, r18
- 290:	b0 01       	movw	r22, r0
- 292:	b3 9f       	mul	r27, r19
- 294:	c0 01       	movw	r24, r0
- 296:	a3 9f       	mul	r26, r19
- 298:	70 0d       	add	r23, r0
- 29a:	81 1d       	adc	r24, r1
- 29c:	11 24       	eor	r1, r1
- 29e:	91 1d       	adc	r25, r1
- 2a0:	b2 9f       	mul	r27, r18
- 2a2:	70 0d       	add	r23, r0
- 2a4:	81 1d       	adc	r24, r1
- 2a6:	11 24       	eor	r1, r1
- 2a8:	91 1d       	adc	r25, r1
- 2aa:	08 95       	ret
-
-000002ac <_exit>:
- 2ac:	f8 94       	cli
-
-000002ae <__stop_program>:
- 2ae:	ff cf       	rjmp	.-2      	; 0x2ae <__stop_program>
+000000d2 <__stop_program>:
+  d2:	ff cf       	rjmp	.-2      	; 0xd2 <__stop_program>

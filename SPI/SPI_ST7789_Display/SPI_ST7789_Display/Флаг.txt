@@ -1,0 +1,129 @@
+#define F_CPU 14745600UL
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+// SPI
+#define SS		PB4
+#define MOSI	PB5
+#define MISO	PB6
+#define SCK		PB7
+
+// ST7789
+#define DC			PC1		// Пин DC
+#define DDR_DC		DDRC	// Порт на котором будет DC
+#define PORT_DC     PORTC	// Порт на котором будет DC
+
+#define RES			PC2		// Пин RES
+#define DDR_RES		DDRC	// Порт на котором будет RES
+#define PORT_RES	PORTC	// Порт на котором будет RES
+
+#define DC_HIGH     PORT_DC |=  (1 << DC);		// DC_HIGH -
+#define DC_LOW      PORT_DC &=~ (1 << DC);
+#define RESET_HIGH  PORT_RES |=  (1 << RES);
+#define RESET_LOW	PORT_RES &=~ (1 << RES);
+
+void setup(void)
+{
+	// Настройка пинов SPI
+	DDRB  |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(0 << MISO);		// Обязательная настройка! Для всех 4-х пинов SPI!
+	PORTB |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(1 << MISO);		//
+
+	// Разрешение SPI (SPE), старший бит вперед (DORD), мастер (MSTR), режим ? ((1 << CPHA)|(0 << SPR1)), делитель частоты - 64 (SPR1, SPR0) (~230кГц)
+	SPCR = (1 << SPE)|(0 << DORD)|(1 << MSTR)|(1 << CPOL)|(1 << CPHA)|(0 << SPR1)|(0 << SPR0);
+	SPSR = (1 << SPI2X);
+	// (1 << CPHA)|(1 << SPR1) - обязательно для st7789!!!
+	
+	
+	// Настройка пина RES ST7789
+	DDRC  |= (1 << RES);									// Выходы (1)
+	PORTC |= (1 << RES);									// Изначально высокий уровень RES
+	
+	// Настройка пина защёлки ST7789
+	DDRC  |= (1 << DC);										// Выходы (1)
+	PORTC |= (1 << DC);										// Изначально высокий уровень DC
+}
+
+void ST7789_SendData(char data)
+{
+	DC_HIGH;
+	SPDR = data;
+	while(!(SPSR & (1 << SPIF)));
+}
+
+void ST7789_SendCommand(char data)
+{
+	DC_LOW;
+	SPDR = data;
+	while(!(SPSR & (1 << SPIF)));
+}
+
+
+
+void stripe(char red, char green, char blue)
+{
+	for(long int i = 0; i < 5760; i++)			// 240 * 240 = 57600
+	{
+		ST7789_SendData(red);
+		ST7789_SendData(green);
+		ST7789_SendData(blue);
+	}	
+}
+
+int main(void)
+{
+	_delay_ms(50);
+	setup();
+	
+	RESET_HIGH;
+	_delay_ms(200);	
+	RESET_LOW;
+	_delay_ms(50);
+	RESET_HIGH;
+	_delay_ms(200);
+	
+
+	ST7789_SendCommand(0x01);	// Software Reset
+	_delay_ms(10);
+	ST7789_SendCommand(0x11);	// Sleep out - проснулись
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x3A);	// режим цвета:
+	ST7789_SendData(0x06);		// 18 бит			  262K-Colors, 3Ah=”06h” стр 103
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x36);	// (36h) Memory data access control
+	ST7789_SendData(0);		// 0x20 = 0b00100000; MY0 MX0 MV1 ML0 RGB0 0 0 0 
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x21);	// Display inversion - on
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x29);	// Display on - включаем изображение
+	_delay_ms(10);
+	
+
+	ST7789_SendCommand(0x2C);
+	
+	stripe(0, 0, 0);
+	stripe(0, 0, 0);
+	
+	stripe(255, 0, 24);
+	stripe(255, 165, 44);
+	stripe(255, 255, 65);
+	stripe(0, 128, 24);
+	stripe(0, 0, 249);
+	stripe(134, 0, 125);
+	
+	stripe(0, 0, 0);
+	stripe(0, 0, 0);
+	
+	while(1)
+	{		
+	}
+}

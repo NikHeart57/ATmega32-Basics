@@ -1,0 +1,166 @@
+#define F_CPU 14745600UL
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+// SPI
+#define SS		PB4
+#define MOSI	PB5
+#define MISO	PB6
+#define SCK		PB7
+
+// ST7789
+#define DC			PC1		// Пин DC
+#define DDR_DC		DDRC	// Порт на котором будет DC
+#define PORT_DC     PORTC	// Порт на котором будет DC
+
+#define RES			PC2		// Пин RES
+#define DDR_RES		DDRC	// Порт на котором будет RES
+#define PORT_RES	PORTC	// Порт на котором будет RES
+
+#define DC_HIGH     PORT_DC |=  (1 << DC);		// DC_HIGH -
+#define DC_LOW      PORT_DC &=~ (1 << DC);
+#define RESET_HIGH  PORT_RES |=  (1 << RES);
+#define RESET_LOW	PORT_RES &=~ (1 << RES);
+
+void setup(void)
+{
+	// Настройка пинов SPI
+	DDRB  |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(0 << MISO);		// Обязательная настройка! Для всех 4-х пинов SPI!
+	PORTB |= (1 << MOSI)|(1 << SCK)|(1 << SS)|(1 << MISO);		//
+
+	// Разрешение SPI (SPE), старший бит вперед (DORD), мастер (MSTR), режим ? ((1 << CPHA)|(0 << SPR1)), делитель частоты - 64 (SPR1, SPR0) (~230кГц)
+	SPCR = (1 << SPE)|(0 << DORD)|(1 << MSTR)|(1 << CPOL)|(1 << CPHA)|(0 << SPR1)|(0 << SPR0);
+	SPSR = (1 << SPI2X);
+	// (1 << CPHA)|(1 << SPR1) - обязательно для st7789!!!
+	
+	
+	// Настройка пина RES ST7789
+	DDRC  |= (1 << RES);									// Выходы (1)
+	PORTC |= (1 << RES);									// Изначально высокий уровень RES
+	
+	// Настройка пина защёлки ST7789
+	DDRC  |= (1 << DC);										// Выходы (1)
+	PORTC |= (1 << DC);										// Изначально высокий уровень DC
+}
+
+void ST7789_SendData(char data)
+{
+	DC_HIGH;
+	SPDR = data;
+	while(!(SPSR & (1 << SPIF)));
+}
+
+void ST7789_SendCommand(char data)
+{
+	DC_LOW;
+	SPDR = data;
+	while(!(SPSR & (1 << SPIF)));
+}
+
+
+void ST7789_DrawPixel(unsigned char x, unsigned char y, unsigned char red, unsigned char green, unsigned char blue)
+{
+	if (x > 240 || y > 240 || x < 0 || y < 0)
+	{
+		return;
+	}
+	
+	ST7789_SendCommand(0x2A);
+	ST7789_SendData(x >> 8);
+	ST7789_SendData(x);
+	ST7789_SendData((x + 1) >> 8);
+	ST7789_SendData( x + 1);
+
+	ST7789_SendCommand(0x2B);
+	ST7789_SendData(y >> 8);
+	ST7789_SendData(y);
+	ST7789_SendData((y + 1) >> 8);
+	ST7789_SendData(y + 1);
+
+	ST7789_SendCommand(0x2C);
+	ST7789_SendData(red << 2);
+	ST7789_SendData(green << 2);
+	ST7789_SendData(blue << 2);	
+}
+
+int main(void)
+{
+	_delay_ms(50);
+	setup();
+	
+	RESET_HIGH;
+	_delay_ms(200);
+	RESET_LOW;
+	_delay_ms(50);
+	RESET_HIGH;
+	_delay_ms(200);
+	
+
+	ST7789_SendCommand(0x01);	// Software Reset
+	_delay_ms(10);
+	ST7789_SendCommand(0x11);	// Sleep out - проснулись
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x3A);		// режим цвета:
+	ST7789_SendData(0x06);			// 18 бит			Write data for 18-bit/pixel (RGB-6-6-6-bit input), 262K-Colors, 3Ah=”06h”
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x36);		// (36h) Memory data access control
+	ST7789_SendData(0b00000000);		// 0x20 = 0b00100000; MY0(верх/низ по Y) MX0(право/лево по X) MV1(vertical addressing mode(развертка справа налево или сверху вниз) ML0 RGB0 0 0 0
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x2A);		// Column address set
+	ST7789_SendData(0);				// XS highpart	(Старшая часть начального положения Колонки)
+	ST7789_SendData(0);				// XS lowpart	(Младшая часть начального положения Колонки)
+	ST7789_SendData(0);				// XE highpart	(Старшая часть конечного положения Колонки)
+	ST7789_SendData(240);			// XE highpart	(Младшая часть конечного положения Колонки)
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x2B);		// Row address set
+	ST7789_SendData(0);				// YS highpart	(Старшая часть начального положения Ряда)
+	ST7789_SendData(0);				// YS lowpart	(Младшая часть начального положения Ряда)
+	ST7789_SendData(0);				// YE highpart	(Старшая часть конечного положения Ряда)
+	ST7789_SendData(240);			// YE highpart	(Младшая часть конечного положения Ряда)
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x21);		// Display inversion - on
+	_delay_ms(10);
+	
+	ST7789_SendCommand(0x29);		// Display on - включаем изображение
+	_delay_ms(10);
+	
+	
+	for (char x = 0; x < 240; x++)
+	{
+		for (char y = 0; y < 240; y++)
+		{
+			ST7789_DrawPixel(x, y, 0, 0, 0);
+		}
+	}
+	
+	
+	int k = 1;
+	
+	while(k < 15)
+	{
+		for(int j = 0; j < 10; j++);
+		{
+			for (float x = -120; x < 120; x += 0.1)
+			{
+				ST7789_DrawPixel((x + 120) , (12 * sin(x/(5.5))) + (15 * k) , 61, (4 * k), 61 - (4 * k));
+			}
+		}
+		
+		k++;
+	}
+
+	while (1)
+	{
+	}
+}

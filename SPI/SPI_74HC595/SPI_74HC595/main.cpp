@@ -42,11 +42,13 @@ void SPI_WriteByte(uint8_t data)
 int main(void)
 {
 	setup();
+	char i = 0;
 	_delay_ms(100);						// Не обязательно
 	
 	while(1)
 	{
-		SPI_WriteByte(rand() % 255);
+		_delay_ms(10);	
+		SPI_WriteByte(i++);
 	}
 }
 
