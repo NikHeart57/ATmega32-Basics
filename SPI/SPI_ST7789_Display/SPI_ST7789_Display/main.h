@@ -2,6 +2,8 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,11 +17,11 @@
 #define SCK		PB7
 
 // ST7789
-#define DC			PC1		// Пин DC
+#define DC			PC2		// Пин DC
 #define DDR_DC		DDRC	// Порт на котором будет DC
 #define PORT_DC     PORTC	// Порт на котором будет DC
 
-#define RES			PC2		// Пин RES
+#define RES			PC3		// Пин RES
 #define DDR_RES		DDRC	// Порт на котором будет RES
 #define PORT_RES	PORTC	// Порт на котором будет RES
 
