@@ -1,16 +1,26 @@
 #include "main.h"
 #include "ST7789.cpp"
 
-
 char XCursor = 0;
 char YCursor = 0;
-char size = 4;
+char size = 5;
 
-unsigned char time[3] = {8, 51, 0};		// hour, min, sec
+unsigned char time[3] = {16, 30, 0};		// hour, min, sec
 unsigned char compTime[3];
 float decHour = 0;
 char buffer[8];
 
+char state = 1;
+
+float stateTime[4] = {6, 8, 18, 20};
+
+char stateWord[4][8] = 
+{
+	{"Sunrise"},
+	{"Day    "},
+	{"Sunset "},
+	{"Night  "},	
+};
 
 
 void setup(void)
@@ -43,30 +53,10 @@ void setup(void)
 
 
 	//////////// Таймер 0 (8 бит) PWM ////////////
-	OCR0 |= 127;	// Скважность - Значение сравнения f = fcpu/(N*256) = 7372800/256 = 28800 || = 14745600/256 = 57600 | 248 -> 97.1% | 249 -> 97.5% | 250 -> 97.9% | 251 -> 98.3% | 252 -> 98.7%  | *по расчету надо 97,5 - 98,6%
+	OCR0 |= 0;	// Скважность - Значение сравнения f = fcpu/(N*256) = 7372800/256 = 28800 || = 14745600/256 = 57600 | 248 -> 97.1% | 249 -> 97.5% | 250 -> 97.9% | 251 -> 98.3% | 252 -> 98.7%  | *по расчету надо 97,5 - 98,6%
 	TCCR0 |= (0 << FOC0)|(1  << WGM01)|(1 << WGM00)|(1 << COM01)|(0 << COM00)|(0 << CS02)|(0 << CS01)|(1 << CS00);	// WGM - fast PWM, COM - clear on compare, CS - прескелер, FOC - ?
 	
 	DDRB |= 0b00001000;		// Вывод ШИМ - PB3(OC0)
-}
-
-void PrintClock(unsigned char time[], char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
-{
-	for(char i = 0; i < 3; i++)
-	{
-		itoa(time[i], buffer, 10);
-	
-		if (time[i] < 10)
-		{
-			ST7789_ASCIPrintString("0", &XCursor, &YCursor, red, green, blue, size);
-		}
-
-		ST7789_ASCIPrintString(buffer, &XCursor, &YCursor, red, green, blue, size);
-	
-		if (i < 2)
-		{
-			ST7789_ASCIPrintString(":", &XCursor, &YCursor, red, green, blue, size);
-		}
-	}	
 }
 
 // Reverses a string 'str' of length 'len'
@@ -129,7 +119,10 @@ void ftoa(float n, char* res, int afterpoint)
 	}
 }
 
-void PrintDecHour(float decHour, char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
+
+
+
+inline void PrintDecHour(float decHour, char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
 {
 	ftoa(decHour, buffer, 3);
 	if (decHour < 1)
@@ -142,6 +135,27 @@ void PrintDecHour(float decHour, char* Xcursor, char* Ycursor, char red, char gr
 	}
 	ST7789_ASCIPrintString(buffer, &XCursor, &YCursor, red, green, blue, size);
 }
+
+inline void PrintClock(unsigned char time[], char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
+{
+	for(char i = 0; i < 3; i++)
+	{
+		itoa(time[i], buffer, 10);
+		
+		if (time[i] < 10)
+		{
+			ST7789_ASCIPrintString("0", &XCursor, &YCursor, red, green, blue, size);
+		}
+
+		ST7789_ASCIPrintString(buffer, &XCursor, &YCursor, red, green, blue, size);
+		
+		if (i < 2)
+		{
+			ST7789_ASCIPrintString(":", &XCursor, &YCursor, red, green, blue, size);
+		}
+	}
+}
+
 
 
 int main(void)
@@ -158,25 +172,91 @@ int main(void)
 	екущие средние записал как предыдущие. 
 	*/
 	
+	
 	while (1)
 	{
+		// Жду новой секунды
 		while (compTime[2] == time[2]){}
 		compTime[2] = time[2];
 		
-		char red = rand() % 60;
-		char green = rand() % 60;
-		char blue = rand() % 60;
 		
+		// Расчет времени
+		decHour = (float)time[0] + (float)time[1] / 60.0 + (float)time[2] / 3600.0;
+		
+		
+		// Определение времени суток и скважности
+		if (decHour < stateTime[0])			// Время меньше чем время рассвета = ночь - 3
+		{
+			state = 3;
+			OCR0 = 1;
+		}
+		else if (decHour < stateTime[1])	// Время меньше чем время начала дня = рассвет - 0
+		{
+			state = 0;
+			OCR0 = (char)(((decHour - stateTime[0])/(stateTime[1] - stateTime[0])) * 253.0) + 1;
+		}
+		else if (decHour < stateTime[2])	// Время меньше чем время конца дня = день - 1
+		{
+			state = 1;
+			OCR0 = 254;
+		}
+		else if (decHour < stateTime[3])	// Время меньше чем время конца заката = закат - 2
+		{
+			state = 2;
+			OCR0 = (char)((1.0 - ((decHour - stateTime[2])/(stateTime[3] - stateTime[2]))) * 253.0) + 1;
+		}
+		else								// В остальных случаях ночь - 3
+		{
+			state = 3;
+			OCR0 = 1;
+		}
+		
+			
+		// Печать Часов		
 		XCursor = 0;
 		YCursor = 0;
-		PrintClock(time, &XCursor, &YCursor, red, green, blue, size);
+		PrintClock(time, &XCursor, &YCursor, 60, 55, 45, size);
 		
-		
+		/*
+		// Печать десятичного времени
 		XCursor = 0;
 		YCursor = 8 * size;
-		PrintDecHour(decHour, &XCursor, &YCursor, red, green, blue, size);
-
+		PrintDecHour(decHour, &XCursor, &YCursor, 60, 55, 45, size);
+		*/
+		
+		// Печать времени суток
+		XCursor = 0;
+		YCursor = 8 * size;
+		ST7789_ASCIPrintString(stateWord[state], &XCursor, &YCursor, 60, 55, 45, size);
+				
+		// Печать скважности
+		XCursor = 0;
+		YCursor = (16 * size) + 4;
+		PrintDecHour((float)((float)OCR0/2.55), &XCursor, &YCursor, 60, 55, 45, (size - 2));
+		ST7789_ASCIPrintString("%", &XCursor, &YCursor, 60, 55, 45, (size - 2));
+		
+		// Печать настроек
+		XCursor = 0;
+		YCursor = (24 * size) + 16;
+		
+		for (char i = 0; i < 4; i++)
+		{
+			ftoa(stateTime[i], buffer, 2);
+			
+			if (stateTime[i] < 10)
+			{
+				ST7789_ASCIPrintString("0", &XCursor, &YCursor, 60, 55, 45, (size - 2));
+			}
+			
+			ST7789_ASCIPrintString(buffer, &XCursor, &YCursor, 60, 55, 45, (size - 2));
+			ST7789_ASCIPrintString(" ", &XCursor, &YCursor, 60, 55, 45, (size - 2));
+			ST7789_ASCIPrintString(stateWord[i], &XCursor, &YCursor, 60, 55, 45, (size - 2));
+			XCursor = 0;
+			YCursor += 8 * (size - 2);
+		}
+		
 	}
+	
 }
 
 
@@ -184,28 +264,28 @@ ISR(TIMER1_COMPA_vect)
 {
 	cli();
 	time[2]++;						// Инкремент секунды
+	time[1] += 3;
 	
 	if (time[2] >= 60)
 	{
 		time[1]++;					// Инкремент минуты
 		time[2] = 0;
-		
-		if (time[1] >= 60)
-		{
-			time[0]++;
-			time[1] = 0;			// Инкремент часа
-			
-			if (time[0] >= 24)		// Сутки
-			{
-				time[2] = 0;
-				time[1] = 0;
-				time[0] = 0;
-			}
-		}
 	}
 	
-	decHour = (float)time[0] + (float)time[1] / 60.0 + (float)time[2] / 3600.0;
-			
+	if (time[1] >= 60)
+	{
+		time[0]++;
+		time[1] = 0;			// Инкремент часа
+	}
+	
+	if (time[0] >= 24)		// Сутки
+	{
+		time[2] = 0;
+		time[1] = 0;
+		time[0] = 0;
+	}
+
+				
 	sei();
 }
 

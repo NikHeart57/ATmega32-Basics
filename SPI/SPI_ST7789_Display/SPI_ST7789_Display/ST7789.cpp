@@ -120,7 +120,7 @@ const char monocraft[96][6] =
 };
 
 
-void ST7789_SendData(char data)
+inline void ST7789_SendData(char data)
 {
 	DC_HIGH;
 	SPDR = data;
@@ -128,7 +128,7 @@ void ST7789_SendData(char data)
 }
 
 
-void ST7789_SendCommand(char data)
+inline void ST7789_SendCommand(char data)
 {
 	DC_LOW;
 	SPDR = data;
@@ -180,7 +180,7 @@ void ST7789_Init(void)
 }
 
 
-void ST7789_DrawPixel(char x, char y, char red, char green, char blue)
+inline void ST7789_DrawPixel(char x, char y, char red, char green, char blue)
 {
 	if (x > 240 || y > 240 || x < 0 || y < 0)
 	{
@@ -203,6 +203,36 @@ void ST7789_DrawPixel(char x, char y, char red, char green, char blue)
 	ST7789_SendData(red << 2);
 	ST7789_SendData(green << 2);
 	ST7789_SendData(blue << 2);
+}
+
+
+inline void ST7789_DrawPixelSquare(char x, char y, char red, char green, char blue, char size)
+{
+	if (x > 240 || y > 240 || x < 0 || y < 0)
+	{
+		return;
+	}
+
+	ST7789_SendCommand(0x2A);
+	ST7789_SendData(x >> 8);
+	ST7789_SendData(x);
+	ST7789_SendData((x + size - 1) >> 8);
+	ST7789_SendData(x + size - 1);
+
+	ST7789_SendCommand(0x2B);
+	ST7789_SendData(y >> 8);
+	ST7789_SendData(y);
+	ST7789_SendData((y + size - 1) >> 8);
+	ST7789_SendData(y + size - 1);
+
+	ST7789_SendCommand(0x2C);
+	
+	for(int i = 0; i < (int)(size*size); i++)
+	{
+		ST7789_SendData(red << 2);
+		ST7789_SendData(green << 2);
+		ST7789_SendData(blue << 2);
+	}
 }
 
 
@@ -271,17 +301,30 @@ void ST7789_DrawLine(float xa, float ya, float xb, float yb, char red, char gree
 
 void ST7789_Fill(char red, char green, char blue)
 {
-	for (char x = 0; x < 240; x++)
+	ST7789_SendCommand(0x2A);
+	ST7789_SendData(0);
+	ST7789_SendData(0);
+	ST7789_SendData(240 >> 8);
+	ST7789_SendData(240);
+
+	ST7789_SendCommand(0x2B);
+	ST7789_SendData(0);
+	ST7789_SendData(0);
+	ST7789_SendData(240 >> 8);
+	ST7789_SendData(240);
+
+	ST7789_SendCommand(0x2C);
+	
+	for(long int i = 0; i < 57600; i++)
 	{
-		for (char y = 0; y < 240; y++)
-		{
-			ST7789_DrawPixel(x, y, red, green, blue);
-		}
+		ST7789_SendData(red << 2);
+		ST7789_SendData(green << 2);
+		ST7789_SendData(blue << 2);
 	}
 }
 
 
-void ST7789_ASCIPrintChar(char letter, char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
+inline void ST7789_ASCIPrintChar(char letter, char* Xcursor, char* Ycursor, char red, char green, char blue, char size)
 {
 	for(char i = 0; i < 6; i++)
 	{
@@ -291,23 +334,11 @@ void ST7789_ASCIPrintChar(char letter, char* Xcursor, char* Ycursor, char red, c
 			mask = 1;
 			if(monocraft[letter - 32][i] & (mask << (7 - y)))
 			{
-				for (char i = 0; i < size; i++)
-				{
-					for (char j = 0; j < size; j++)
-					{
-						ST7789_DrawPixel(*Xcursor + j, (*Ycursor + (y * size)) + i, red, green, blue);
-					}
-				}
+				ST7789_DrawPixelSquare(*Xcursor, *Ycursor + (y * size), red, green, blue, size);
 			}
 			else
 			{
-				for (char i = 0; i < size; i++)
-				{
-					for (char j = 0; j < size; j++)
-					{
-						ST7789_DrawPixel((*Xcursor) + j, (*Ycursor + (y * size)) + i, 0, 0, 0);
-					}
-				}
+				ST7789_DrawPixelSquare(*Xcursor, *Ycursor + (y * size), 0, 0, 0, size);
 			}
 
 		}
