@@ -22,18 +22,24 @@
   <FILE>ASM_LED1602.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <RAM_var><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>12</LINE></RAM_var>
-  <reset><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>19</LINE></reset>
-  <main><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>32</LINE></main>
-  <send_cmd_r16><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>60</LINE></send_cmd_r16>
-  <msg_hw><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>125</LINE></msg_hw>
-  <loop><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>48</LINE></loop>
-  <send_data_r16><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>71</LINE></send_data_r16>
-  <end><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>55</LINE></end>
-  <BF_check><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>82</LINE></BF_check>
-  <BF_check_loop><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>86</LINE></BF_check_loop>
-  <delay><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>104</LINE></delay>
-  <delay_d2><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>110</LINE></delay_d2>
-  <delay_d1><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>112</LINE></delay_d1>
+  <RAM_delay_loop0><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>83</LINE></RAM_delay_loop0>
+  <RAM_delay_loop1><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>84</LINE></RAM_delay_loop1>
+  <RAM_LED1602_ZL><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>85</LINE></RAM_LED1602_ZL>
+  <RAM_LED1602_ZH><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>86</LINE></RAM_LED1602_ZH>
+  <RAM_LED1602_byte><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>87</LINE></RAM_LED1602_byte>
+  <RESET><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>100</LINE></RESET>
+  <main><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>129</LINE></main>
+  <msg_hw><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>116</LINE></msg_hw>
+  <LCD1602_send_cmd><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>226</LINE></LCD1602_send_cmd>
+  <LCD1602_print_string><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>166</LINE></LCD1602_print_string>
+  <main_end><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>155</LINE></main_end>
+  <LCD1602_print_string_loop><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>180</LINE></LCD1602_print_string_loop>
+  <LCD1602_print_string_exit><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>188</LINE></LCD1602_print_string_exit>
+  <LCD1602_send_data><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>205</LINE></LCD1602_send_data>
+  <BF_check><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>247</LINE></BF_check>
+  <BF_check_loop><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>251</LINE></BF_check_loop>
+  <delay><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>278</LINE></delay>
+  <delay_loop1><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>283</LINE></delay_loop1>
+  <delay_loop0><FILE>C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm</FILE><LINE>285</LINE></delay_loop0>
  </LABELS>
 </ASSEMBLER_INFO>

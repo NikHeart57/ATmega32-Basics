@@ -1,24 +1,106 @@
+;*************************************************************************
+;*************** ТЕСТОВАЯ ПРОГРАММА ДЛЯ УПРАВЛЕНИЯ LED1602 ***************
+;*************************************************************************
+;*
+;*  ПРАВИЛА:
+;*	Метки векторов прерывания писать капсом
+;*	Символичекие имена констант писать капсом
+;*	Метки участков flash-памяти с константами писать капсом
+;*	Названия циклов и ветвлений внутри подпрограмм начинать с названия этого цикла
+;*	Передача параметров функции осущетвляется через ОЗУ
+;*		
+;*	При заходе в подпрограмму регистр статуса SREG обязательно сораняется в стек если:
+;*		 1. Произошел вызов подпрораммы по вектору прерывания
+;*		 2. В подпрограмме происходит сравнение величин или логические операции (влияет на флаг Z)
+;*	Чтение регистра	SREG	- командой in
+;*	Запись в регистра SREG	- командой out
+;*	
+;*  При взаимодействии с периферийными устройствами следует запрещать прерывания (cli), 
+;*	а данные регистров общего доступа и регистра состояния следует прятать в стек
+;*	Периферийными устройствами считаются: 
+;*		 1. Порты ввода-вывода PORTX, PIN, DDRX
+;*		 2. Прерывания и всякое взаимодействие по внешнему прерыванию INTX
+;*		 3. Таймеры, счетчики и сторжевой таймер TIMX
+;*		 4. Аналоговый компаратор AC
+;*		 5. Аналого-цифровой преобразователь ADC
+;*		 6. Универсальный последовательный приемопередатчик USART
+;*		 7. Последовательный периферийный интерфейс SPI
+;*		 8. Двухпроводной последовательный интерфейс TWI
+;*		 9. Интерфейс JTAG
+;*		10. Внутренний тактовый генератор
+;*		11. Система реального времени
+;*  Также следует запрещать прерывания в случае всякого перехода по вектору прерывания
+;*	НО! Запрещение прерывания не требуется если вызывающая функция уже запретила прерывание
+;*
+;*
+;*	СПРАВКА
+;*	У МК всего 2 вида памяти: 
+;*		1. ОЗУ - она же: RAM, SRAM, ОЗУ или оперативная память	(.dseg)
+;*		2. ПЗУ - она же: ROM, flash, или память программ		(.cseg)
+;*	EEPROM не считается памятью МК, так как является периферийным устройством
+;*	хотя и возможна работа с его памятью						(.eseg)
+;*
+;*	Регистры общего назначения (доступа), регистры периферийных устройств и стек, все они размещаются в ОЗУ
+;*  по адресам:
+;*		Регистры общего назначения (r0 - r31)								- $0000 - $001F
+;*		Регистры периферийных устройств (TWBR, TWI, PORT, SP, SREG, и др.)	- $0020 - $005F
+;*		Область SRAM														- $0060 - $085F
+;*  Стек начинается с конца SRAM. Заполнение стека идет с конца памяти до ее начала.
+;*	При записи в стек присходит увеличение регистра стек поинтера SP.
+;*	С регистра SP возможно чтение и запись
+;*	Стек используют команды вызовов и возвратов (CALL, RCALL, ICALL, RET, RETI)
+;*
+;*************************************************************************
+
+; ***** СЕГМЕНТ ПРЕПРОЦЕССОРА ********************************************
 .device		ATmega32
 .include	"m32def.inc"
-							
-.equ		E			= 0b00000001				; Объявление символических имен констант
-.equ		RW			= 0b00000010				; Присваивание символическим именам некоторого числового значения
+.list
+
+; ***** ОПРЕДЕЛЕНИЕ СИМВОЛИЧЕСКИХ ИМЕН ДЛЯ КОНСТАНТ *****							
+.equ		E			= 0b00000001
+.equ		RW			= 0b00000010
 .equ		RS			= 0b00000100
-.equ		msg_hw_size	= 16
-.def		temp1		= r16						; Присваивание символических имен регистрам общего доступа	
+.equ		MSG_HW_SIZE	= 16
 
-.dseg												; Сегмент данных ОЗУ (стек)
-.org		$0060									; Резервирование места в памяти озу под переменные
-RAM_var:	.byte 1
+; ***** ОПРЕДЕЛЕНИЕ СИМВОЛИЧЕСКИХ ИМЕН РЕГИСТРОВ CPU *****
+.def		temp0		= r16						; Присваивание символических имен регистрам общего доступа	
+.def		temp1		= r17						; Регистрам temp0 - temp5 гарантируется сохранение в стеке
+.def		temp2		= r18						; Регистры insvar0 - insvar3 в стек не сохраняются, а используются как внутреннние переменные внутри подпрограмм
+.def		temp3		= r19						
+.def		temp4		= r20
+.def		temp5		= r21
+.def		intvar0		= r22
+.def		intvar1		= r23
+.def		intvar2		= r24
+.def		intvar3		= r25
 
-.cseg												; Сегмент кода
-.org		$000									; Таблица векторов прерываний
-  	jmp		reset
 
-.org		$030									; Начало программы
-reset:
+; ***** СЕГМЕНТ ОЗУ (SRAM) ***********************************************
+; ***** РЕЗЕРВИРОВАНИЕ ПАМЯТИ В ОЗУ *****
+.dseg												; Это чем-то похоже на указатели в си
+.org		SRAM_START								; Резервирование места в памяти озу под переменные (SRAM_START = 0x0060)
+RAM_delay_loop0:		.byte 1						; Функция delay
+RAM_delay_loop1:		.byte 1						; Функция delay
+RAM_LED1602_ZL:			.byte 1						; Функция LCD1602_print_string
+RAM_LED1602_ZH:			.byte 1						; Функция LCD1602_print_string
+RAM_LED1602_byte:		.byte 1						; Функция LCD1602_send_cmd и LCD1602_send_data
+
+
+; ***** СЕГМЕНТ КОДА *****************************************************
+; ***** ТАБЛИЦА ВЕКТОРОВ ПРЕРЫВАНИЙ *****
+.cseg
+.org		$0000
+  	jmp		RESET
+.org		INT_VECTORS_SIZE						; INT_VECTORS_SIZE = 42
+
+; ***** УЧАСТОК ВЕКТОРОВ ПРЕРЫВАНИЙ *****
+; ***** ВЕКТОР ПРЕРЫВАНИЯ RESET *****
+.org		INT_VECTORS_SIZE
+RESET:
+	cli
 	ldi		r16,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
-    out		SPL,	r16
+    out		SPL,	r16								; SP - регистер стек пойнтера
 	ldi		r16,	High(RAMEND)
 	out		SPH,	r16
 
@@ -26,101 +108,192 @@ reset:
 	out		DDRA,	r16								; Отправка значения temp1 в регистр DDRC
 	ldi		r16,	0b00000111	
 	out		DDRB,	r16
-
+	sei
 	jmp		main
 
-main:
-	ldi		r16,	0b00111000						; 0b00111000 - 8bit line, 2 row mode, 5x8 font
-	call	send_cmd_r16
-	ldi		r16,	0b00001100						; 0b00001100 - Turns on display and cursor
-	call	send_cmd_r16
-	ldi		r16,	0b00000110						; 0b00000110 - Sets mode to increment the address by one and to shift the cursor to the right at the time of write to the DD/CGRAM.
-	call	send_cmd_r16
-	ldi		r16,	0b00000001						; 0b00000001 - Clear screen
-	call	send_cmd_r16
 
-	clr		ZL
-	clr		ZH
-	ldi		r17,	0
-
-	ldi		ZH,		high(msg_hw << 1)				; Инициализация Z-указателя
-	ldi		ZL,		low(msg_hw << 1)
-loop:
-	lpm		r16,	Z+								; load lower byte of var into r4 (0x34)
-	call	send_data_r16
-	inc		r17
-	cpi		r17,	msg_hw_size
-	brne	loop
-
-end:
-	jmp		end
-
-
-
-send_cmd_r16:
-	call	BF_check
-	out		PORTA,	r16
-	ldi		r16,	0
-	out		PORTB,	r16
-	ldi		r16,	E
-	out		PORTB,	r16
-	ldi		r16,	0
-	out		PORTB,	r16
-	ret
-
-send_data_r16:
-	call	BF_check
-	out		PORTA,	r16
-	ldi		r16,	0
-	out		PORTB,	r16
-	ldi		r16,	(RS|E)
-	out		PORTB,	r16
-	ldi		r16,	0
-	out		PORTB,	r16
-	ret
-
-BF_check:
-	push	r16
-	ldi		r16,	0
-	out		DDRA,	r16
-BF_check_loop:
-	ldi		r16,	RW
-	out		PORTB,	r16
-	ldi		r16,	(RW|E)
-	out		PORTB,	r16
-	ldi		r16,	RW
-	out		PORTB,	r16
-	in		r16,	PINA
-	sbrc	r16,	7
-	jmp		BF_check_loop	
-	nop
-	ldi		r16,	0b11111111
-	out		DDRA,	r16
-	call	delay
-	pop		r16
-	ret
-
-
-delay:
-	push	r16
-	push	r17
-	in		r16,	sreg
-	push	r16
-	ldi		r17,	10								; Задержка задерживается так - 10*10*4 + 14 = 414
-delay_d2:
-	ldi		r16,	10
-delay_d1:
-  	dec		r16
-	cpi		r16,	0
-	brne	delay_d1
-	dec		r17
-	cpi		r17,	1
-	brne	delay_d2
-	pop		r16
-	out		SREG,	r16
-	pop		r17
-	pop		r16
-	ret
-
+; ***** УЧАСТОК РЕЗЕРВИРОВАНИЯ КОНСТАНТ ВО FLASH ПАМЯТИ *****
 msg_hw:
-   .db		"Hello, world!   "
+   .db		"Hello, world!", 0
+
+
+; ***** УЧАСТОК МАКРОСОВ *****
+;.macro	macro_name
+;	ldi		r16,	@0
+;	nop
+;.endmacro
+
+
+; ***** УЧАСТОК ПРОГРАММЫ *****
+; ***** НАЧАЛО ПРОГРАММЫ *****
+main:
+	; Инициализация экрана 
+	ldi		temp0,	0b00111000						; 0b00111000 - 8bit line, 2 row mode, 5x8 font
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		temp0,	0b00001100						; 0b00001100 - Turns on display and cursor
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		temp0,	0b00000110						; 0b00000110 - Sets mode to increment the address by one and to shift the cursor to the right at the time of write to the DD/CGRAM.
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+
+	; Печать массива. Сначала загрузка в ОЗУ адреса массива для печати, затем вызов подпрограммы печати
+	ldi		ZH,		high(msg_hw << 1)				; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+	sts		RAM_LED1602_ZH,	ZH
+	ldi		ZL,		low(msg_hw << 1)
+	sts		RAM_LED1602_ZL,	ZL
+	call	LCD1602_print_string
+
+main_end:
+	jmp		main_end
+; ***** КОНЕЦ ПРОГРАММЫ *****
+
+
+; ***** УЧАСТОК ПОДПРОГРАММ *****
+; ***** ПОДПРОРАММА ПЕЧАТИ СТРОКИ НА ЭКРАН *****
+; Принимает из ОЗУ адрес массива и печатет его до тех пор пока не наткнется на нуль-терминатор
+; Адрес массива	принимается из адресов: RAM_LED1602_ZL и RAM_LED1602_ZH
+; *Требуется сохранение регистра статуса так как происходит сравнение внутри подпрограммы
+; *Не требуется запрещение прерываний так как нет общения с периферией
+LCD1602_print_string:
+  /*cli
+	push	temp0
+	push	temp1
+	push	temp2
+	push	temp3
+	push	temp4
+	push	temp5*/
+	in		intvar3,	sreg
+	push	intvar3
+	
+	lds		ZL,	RAM_LED1602_ZL						; Выгрузка данных из ОЗУ
+	lds		ZH,	RAM_LED1602_ZH
+
+LCD1602_print_string_loop:
+	lpm		intvar0,	Z+							; Загрузка байта по адресу Z в регистр intvar0 c постинкрементом
+	cpi		intvar0,	'\0'						; Сравнение значения в регистре intvar0 с нуль-терминатором
+	breq	LCD1602_print_string_exit				; Если там нуль-терминатор то выход из подпрограммы
+	sts		RAM_LED1602_byte,	intvar0				; А если не нуль-терминатор то загрузить адрес в ОЗУ байт для печати				
+	call	LCD1602_send_data						; и вызвать подпрограмму печати сивмола
+	brne	LCD1602_print_string_loop				; и снова повторить цикл
+
+LCD1602_print_string_exit:
+	pop		intvar3
+	out		SREG,	intvar3
+  /*pop		temp5
+	pop		temp4
+	pop		temp3
+	pop		temp2
+	pop		temp1
+	pop		temp0
+	sei*/
+	ret
+
+
+; ***** ПОДПРОРАММА ОТПРАКИ ДАННЫХ НА ЭКРАН *****
+; Принимает из ОЗУ байт данных для печати и выводит его на экран
+; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
+; *Требуется запрещение прерываний так как происходит общение с периферией (PORTA, PORTB)
+LCD1602_send_data:
+	cli
+	call	BF_check								; Проверка флага занятости
+
+	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
+	out		PORTA,		intvar0
+
+	ldi		intvar0,	0							; Такт порта 
+	out		PORTB,		intvar0
+	ldi		intvar0,	(RS|E)
+	out		PORTB,		intvar0
+	ldi		intvar0,	0
+	out		PORTB,		intvar0
+	sei
+	ret
+
+
+; ***** ПОДПРОРАММА ОТПРАКИ КОМАНДЫ НА ЭКРАН *****
+; Принимает из ОЗУ байт команды для настройки экрана и отправляет его в экран
+; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
+; *Требуется запрещение прерываний так как происходит общение с периферией (PORTA, PORTB)
+LCD1602_send_cmd:
+	cli
+	call	BF_check								; Проверка флага занятости
+
+	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
+	out		PORTA,		intvar0
+
+	ldi		intvar0,	0							; Такт порта 
+	out		PORTB,		intvar0
+	ldi		intvar0,	E
+	out		PORTB,		intvar0
+	ldi		intvar0,	0
+	out		PORTB,		intvar0
+	sei
+	ret
+
+
+; ***** ПОДПРОРАММА ПРОВЕРКИ ФЛАГА ЗАНЯТОСТИ ЭКРАНА *****
+; Подпрограмма проверяет состояние пина BF у LED1602
+; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
+; *Не требуется запрещение прерываний так как, хотя и происходит общение с периферией (PORTA, PORTB), запрещение уже сделано в родительской функции LCD1602_send_cmd и LCD1602_send_data
+BF_check:
+	ldi		intvar1,	0b00000000					; Порт A на ввод данных		
+	out		DDRA,		intvar1
+
+BF_check_loop:
+	ldi		intvar1,	RW							; Такт порта 
+	out		PORTB,		intvar1
+	ldi		intvar1,	(RW|E)
+	out		PORTB,		intvar1
+	ldi		intvar1,	RW
+	out		PORTB,		intvar1
+
+	in		intvar1,	PINA						; Чтение порта данных
+	sbrc	intvar1,	7							; Проверка пина флага занятости
+	jmp		BF_check_loop							; Если есть флаг занятости то повторить проверку
+
+	ldi		intvar1,	0b11111111					; Если нет флага занятости то выйти из подпрограммы		
+	out		DDRA,		intvar1
+	
+	ldi		intvar1,	10							; Перед выходом из подпрограммы вызвать задержку на 4 * RAM_delay_loop1 * RAM_delay_loop0 + 38 = 438 тактов
+	sts		RAM_delay_loop0,	intvar1
+	ldi		intvar1,	10
+	sts		RAM_delay_loop1,	intvar1
+	call	delay
+	ret
+
+
+; ***** ПОДПРОРАММА ЗАДЕРЖКИ *****
+; Задержка расчитывается по формуле:  4 * RAM_delay_loop1 * RAM_delay_loop0 + 12
+; *Требуется сохранение регистра статуса так как происходит сравнение внутри подпрограммы
+; *Не требуется запрещение прерываний так как нет общения с периферией
+delay:
+	in		intvar3,	sreg
+	push	intvar3
+	
+	lds		intvar1,	RAM_delay_loop1
+delay_loop1:
+	lds		intvar0,	RAM_delay_loop0
+delay_loop0:
+  	dec		intvar0
+	cpi		intvar0,	0
+	brne	delay_loop0
+	dec		intvar1
+	cpi		intvar1,	1
+	brne	delay_loop1
+
+	pop		intvar3
+	out		SREG,	intvar3
+	ret
+
+
+; ***** СЕГМЕНТ EEPROM *****************************************************
+.eseg
