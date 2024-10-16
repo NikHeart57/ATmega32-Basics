@@ -1,12 +1,12 @@
 
-AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler\main.asm Mon Oct 09 14:51:59 2023
+AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Sat Oct 12 18:39:12 2024
 
-[builtin](2): Including file 'D:/Programs\MicrochipStudio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
-C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler\main.asm(3): Including file 'D:/Programs\MicrochipStudio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
-[builtin](2): Including file 'D:/Programs\MicrochipStudio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
-C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler\main.asm(3): Including file 'D:/Programs\MicrochipStudio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
+C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm(2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
+C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm(2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
                                  
-                                 .DEVICE		ATmega32		; Директива ".DEVICE - определение устройства для которого пишется код"					
+                                 .device		ATmega32
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega32.xml ************
                                  ;*************************************************************************
@@ -822,8 +822,7 @@ C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler
                                  #endif  /* _M32DEF_INC_ */
                                  
                                  
-                                 							; Директива ".INCLUDE" - подключение заголовочных файлов
-                                 .INCLUDE	"m32def.inc"		; Подключен заголовочный файл в котором хранятся адреса и символические имена регистров (типа: PORTA, DDRA, TIMSK и т.д.)											
+                                 .include	"m32def.inc"
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega32.xml ************
                                  ;*************************************************************************
@@ -867,153 +866,136 @@ C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler
                                  
                                  #endif  /* _M32DEF_INC_ */
                                  
-                                 							; Директива ".DEF" - Присвоение символического имени регистру		
-                                 .DEF		temp1 = r16			; Присвоение символического имени регистру r16 
-                                 .DEF		temp2 = r17			; Присвоение символического имени регистру r17
-                                 .DEF		temp3 = r18			; Присвоение символического имени регистру r18
-                                 .DEF		temp4 = r19			; Присвоение символического имени регистру r18
-                                 .DEF		null = r25			; Присвоение символического имени регистру r25	*Для справки: у AtMega32 регистры общего назначения - r16-r25								
-                                 							; Директива ".DSEG" - Начало сегмента данных
-                                 .DSEG							; Директива ".BYTE" - резервирует байты в ОЗУ (доступны адреса: $0060 - $085F)
-                                 .ORG		$0060				; Директива .ORG устанавливает счётчик положения равным заданной величине, которая передаётся как параметр
-000060                           Second:		.BYTE 1				; зарезервирован 1 байт для Second по адресу	$0060
-                                 .ORG		$0061
-000061                           Minute:		.BYTE 1				; зарезервирован 1 байт для Minute по адресу	$0061
-                                 .ORG		$0062
-000062                           Hour:		.BYTE 1				; зарезервирован 1 байт для Hour по адресу		$0062
+                                 							
+                                 .equ		E			= 0b00000001				; Объявление символических имен констант
+                                 .equ		RW			= 0b00000010				; Присваивание символическим именам некоторого числового значения
+                                 .equ		RS			= 0b00000100
+                                 .equ		msg_hw_size	= 16
+                                 .def		temp1		= r16						; Присваивание символических имен регистрам общего доступа	
                                  
-                                 .CSEG						; Директива ".CSEG" - Начало програмного сегмента (кода)
-                                 .ORG		$000				; Директива ".ORG" - Начальное значение для адресации. // Адрес вектора прерывания Reset (Вектор номер - 1, адрес - $000, название - RESET, символическое имя - RESET)
-000000 940c 002a                 	JMP		RESET				; (Обязательно JMP(RJMP - все ломает) Данная команда будет размещена по адресу $000 
-                                 .ORG		$008				; Адрес вектора прерывания TIM2_COMP - (Вектор номер - 5, адрес - $008, название - TIMER2 COMP символическое имя - TIM2_COMP)
-000008 940c 0057                 	JMP		TIM2_COMP			; (Обязательно JMP(RJMP - все ломает) Данная команда будет размещена по адресу $008
-                                 .ORG		$00E				; Адрес вектора прерывания TIM1_COMPA - (Вектор номер - 8, адрес - $00E, название - TIMER1 COMPA, символическое имя - TIM1_COMPA)
-00000e 940c 0065                 	JMP		TIM1_COMPA			; (Обязательно JMP(RJMP - все ломает) Данная команда будет размещена по адресу $014
-                                 .ORG		INT_VECTORS_SIZE    ; Конец таблицы прерываний
+                                 .dseg												; Сегмент данных ОЗУ (стек)
+                                 .org		$0060									; Резервирование места в памяти озу под переменные
+000060                           RAM_var:	.byte 1
                                  
-                                 RESET:						; Метка RESET // Начало кода вектора RESET
-                                 	; Стек
-00002a e50f                      	LDI		temp1,	Low(RAMEND)	; Инициализация стека - Обязательно!!!
-00002b bf0d                      	OUT		SPL,	temp1		; Инициализация стека..
-00002c e008                      	LDI		temp1,	High(RAMEND); Инициализация стека..
-00002d bf0e                      	OUT		SPH,	temp1		; Инициализация стека
+                                 .cseg												; Сегмент кода
+                                 .org		$000									; Таблица векторов прерываний
+000000 940c 0030                   	jmp		reset
                                  
-                                 	; Порты I/O
-00002e e30f                      	LDI		temp1,	0b00111111	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
-00002f bb04                      	OUT		DDRC,	temp1		; Отправка значения temp1 в регистр DDRC
-000030 e008                      	LDI		temp1,	0b00001000	
-000031 bb07                      	OUT		DDRB,	temp1
+                                 .org		$030									; Начало программы
+                                 reset:
+000030 e50f                      	ldi		r16,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
+000031 bf0d                          out		SPL,	r16
+000032 e008                      	ldi		r16,	High(RAMEND)
+000033 bf0e                      	out		SPH,	r16
                                  
-                                 	; Разрешение прерываний для таймеров 2 и 1 по совпадению
-000032 e900                      	LDI		temp1,	(1 << OCIE2)|(0 << TOIE2)|(0 << TICIE1)|(1 << OCIE1A)|(0 << OCIE1B)|(0 << TOIE1)|(0 << OCIE0)|(0 << TOIE0) ; OCIE2 OCIE1A - 11 - прерывания разрешены
-000033 bf09                      	OUT		TIMSK,	temp1
-000034 9478                      	SEI							; Разрешение прерываний
+000034 ef0f                      	ldi		r16,	0b11111111						; Порты I/O	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
+000035 bb0a                      	out		DDRA,	r16								; Отправка значения temp1 в регистр DDRC
+000036 e007                      	ldi		r16,	0b00000111	
+000037 bb07                      	out		DDRB,	r16
                                  
-                                 	; Таймер 2 - Динамическая индикация
-000035 e707                      	LDI		temp1,	119			; Число по которому вызовется прерывание
-000036 bd03                      	OUT		OCR2,	temp1
-000037 e00e                      	LDI		temp1,	(0 << FOC2)|(1 << WGM21)|(0 <<  WGM20)|(0 << COM21)|(0 << COM20)|(1 << CS22)|(1 << CS21)|(0 << CS20) ; COM - 00, пины отключены; WGM - 10 - CTC; CS - 110 - преселер 256
-000038 bd05                      	OUT		TCCR2,	temp1
+000038 940c 003a                 	jmp		main
                                  
-                                 	; Таймер 1 - Часы
-000039 e308                      	LDI		temp1,	High(14398)	; Запись старшего байта 7199 || 14398
-00003a e31e                      	LDI		temp2,	Low(14398)	; Запись младшего байта
-00003b bd0b                      	OUT		OCR1AH,	temp1		; OCR1AH[15:8]	- Запись надо проводить как тут - одновременно, сначала H, потом L. Запись значения прерывания CTC производится до инициализации таймера
-00003c bd1a                      	OUT		OCR1AL,	temp2		; OCR1AL[7:0]
-00003d e000                      	LDI		temp1,	(0 << COM1A1)|(0 << COM1A0)|(0 << COM1B1)|(0 << COM1B0)|(0 << FOC1A)|(0 << FOC1B)|(0 << WGM11)|(0 << WGM10) ; COM - порты, FOC - ?, WGM - режим CTC, CS - прескелер
-00003e bd0f                      	OUT		TCCR1A,	temp1
-00003f e00d                      	LDI		temp1,	(0 <<  ICNC1)|(0 <<  ICES1)|(0 <<  WGM13)|(1 <<  WGM12)|(1 <<  CS12)|(0 <<  CS11)|(1 <<  CS10) ; IC - настройки пина ICP1 (PD6)
-000040 bd0e                      	OUT		TCCR1B,	temp1
+                                 main:
+00003a e308                      	ldi		r16,	0b00111000						; 0b00111000 - 8bit line, 2 row mode, 5x8 font
+00003b 940e 0053                 	call	send_cmd_r16
+00003d e00c                      	ldi		r16,	0b00001100						; 0b00001100 - Turns on display and cursor
+00003e 940e 0053                 	call	send_cmd_r16
+000040 e006                      	ldi		r16,	0b00000110						; 0b00000110 - Sets mode to increment the address by one and to shift the cursor to the right at the time of write to the DD/CGRAM.
+000041 940e 0053                 	call	send_cmd_r16
+000043 e001                      	ldi		r16,	0b00000001						; 0b00000001 - Clear screen
+000044 940e 0053                 	call	send_cmd_r16
                                  
-                                 	; Таймер 0 - PWM
-000041 ef0a                      	LDI		temp1,	250			; | 248 -> 97.1% | 249 -> 97.5% | 250 -> 97.9% | 251 -> 98.3% | 252 -> 98.7%  | *по расчету надо 97,5 - 98,6%
-000042 bf0c                      	OUT		OCR0,	temp1		; Значение сравнения f = fcpu/(N*256) = 7372800/256 = 28800 || = 14745600/256 = 57600
-000043 e609                      	LDI		temp1,	(0 << FOC0) |(1  << WGM01)|(1 << WGM00)|(1 << COM01)|(0 << COM00)|(0 << CS02)|(0 << CS01)|(1 << CS00) ; WGM - fast PWM, COM - clear on compare, CS - прескелер, FOC - ?
-000044 bf03                      	OUT		TCCR0,	temp1
+000046 27ee                      	clr		ZL
+000047 27ff                      	clr		ZH
+000048 e010                      	ldi		r17,	0
                                  
-000045 e090                      	LDI		null,		0		; инициализация регистра null(r25)
-000046 9390 0060                 	STS		Second,		null	; обнуление Second
-000048 9390 0061                 	STS		Minute,		null	; обнуление Minute
-00004a 9390 0062                 	STS		Hour,		null	; обнуление	Hour
-00004c 2700                      	CLR		temp1				; Очистка регистра temp1
-00004d 2711                      	CLR		temp2				; Очистка регистра temp2
-00004e 940c 0050                 	JMP		Start				; Переход в программу
+000049 e0f1                      	ldi		ZH,		high(msg_hw << 1)				; Инициализация Z-указателя
+00004a e1e8                      	ldi		ZL,		low(msg_hw << 1)
+                                 loop:
+00004b 9105                      	lpm		r16,	Z+								; load lower byte of var into r4 (0x34)
+00004c 940e 005d                 	call	send_data_r16
+00004e 9513                      	inc		r17
+00004f 3110                      	cpi		r17,	msg_hw_size
+000050 f7d1                      	brne	loop
+                                 
+                                 end:
+000051 940c 0051                 	jmp		end
                                  
                                  
-                                 	; Програмулина
-                                 Start:						; Начало кода программы
-                                 	//LDS		temp1, Second		; Пересылка из I/O-регистра в регистр (60 = 0b 0011 1100; 24 = 0b 0001 1000)
-                                 	//OUT		PORTC, temp1
-000050 0000                      	NOP
-000051 0000                      	NOP
-000052 0000                      	NOP
-000053 0000                      	NOP
-000054 0000                      	NOP
-000055 940c 0050                 	JMP		Start				; Относительный переход (Повтор Start)
+                                 
+                                 send_cmd_r16:
+000053 940e 0067                 	call	BF_check
+000055 bb0b                      	out		PORTA,	r16
+000056 e000                      	ldi		r16,	0
+000057 bb08                      	out		PORTB,	r16
+000058 e001                      	ldi		r16,	E
+000059 bb08                      	out		PORTB,	r16
+00005a e000                      	ldi		r16,	0
+00005b bb08                      	out		PORTB,	r16
+00005c 9508                      	ret
+                                 
+                                 send_data_r16:
+00005d 940e 0067                 	call	BF_check
+00005f bb0b                      	out		PORTA,	r16
+000060 e000                      	ldi		r16,	0
+000061 bb08                      	out		PORTB,	r16
+000062 e005                      	ldi		r16,	(RS|E)
+000063 bb08                      	out		PORTB,	r16
+000064 e000                      	ldi		r16,	0
+000065 bb08                      	out		PORTB,	r16
+000066 9508                      	ret
+                                 
+                                 BF_check:
+000067 930f                      	push	r16
+000068 e000                      	ldi		r16,	0
+000069 bb0a                      	out		DDRA,	r16
+                                 BF_check_loop:
+00006a e002                      	ldi		r16,	RW
+00006b bb08                      	out		PORTB,	r16
+00006c e003                      	ldi		r16,	(RW|E)
+00006d bb08                      	out		PORTB,	r16
+00006e e002                      	ldi		r16,	RW
+00006f bb08                      	out		PORTB,	r16
+000070 b309                      	in		r16,	PINA
+000071 fd07                      	sbrc	r16,	7
+000072 940c 006a                 	jmp		BF_check_loop	
+000074 0000                      	nop
+000075 ef0f                      	ldi		r16,	0b11111111
+000076 bb0a                      	out		DDRA,	r16
+000077 940e 007b                 	call	delay
+000079 910f                      	pop		r16
+00007a 9508                      	ret
                                  
                                  
-                                 	; Подпрограмма таймера 2 - Динамическая индикация
-                                 TIM2_COMP:
-000057 94f8                      	CLI							; Запрещаем прерывания, чтобы больше никакое прерывание не вклинилось
-000058 930f                      	PUSH	temp1				; Поместить значение регистра в стек
-000059 932f                      	PUSH	temp3				; Поместить значение регистра в стек
-00005a b70f                      	IN		temp1,	SREG		; Загрузить из пространства ввода/вывода (порты, таймеры, конфигурационные регистры и т.д.) в регистр общего назначения
-00005b 930f                      	PUSH	temp1				; Поместить значение регистра в стек
+                                 delay:
+00007b 930f                      	push	r16
+00007c 931f                      	push	r17
+00007d b70f                      	in		r16,	sreg
+00007e 930f                      	push	r16
+00007f e01a                      	ldi		r17,	10								; Задержка задерживается так - 10*10*4 + 14 = 414
+                                 delay_d2:
+000080 e00a                      	ldi		r16,	10
+                                 delay_d1:
+000081 950a                        	dec		r16
+000082 3000                      	cpi		r16,	0
+000083 f7e9                      	brne	delay_d1
+000084 951a                      	dec		r17
+000085 3011                      	cpi		r17,	1
+000086 f7c9                      	brne	delay_d2
+000087 910f                      	pop		r16
+000088 bf0f                      	out		SREG,	r16
+000089 911f                      	pop		r17
+00008a 910f                      	pop		r16
+00008b 9508                      	ret
                                  
-00005c b325                      	IN		temp3, PORTC
-00005d 9523                      	INC		temp3
-00005e bb25                      	OUT		PORTC, temp3
-                                 
-00005f 910f                      	POP		temp1				; Извлечь значение регистра из стека
-000060 bf0f                      	OUT		SREG,	temp1		; Вывод в пространство ввода/вывода
-000061 912f                      	POP		temp3				; Извлечь значение регистра из стека
-000062 910f                      	POP		temp1				; Извлечь значение регистра из стека
-000063 9478                      	SEI							; Разрешение прерываний
-000064 9518                      	RETI
-                                 
-                                 
-                                 	; Подпрограмма таймера 1 - Часы
-                                 TIM1_COMPA:					; Код вектора прерываний 
-000065 94f8                      	CLI							; Запрещаем прерывания, чтобы больше никакое прерывание не вклинилось
-000066 930f                      	PUSH	temp1				; Поместить значение регистра в стек
-000067 b70f                      	IN		temp1,	SREG		; Загрузить из пространства ввода/вывода (порты, таймеры, конфигурационные регистры и т.д.) в регистр общего назначения
-000068 930f                      	PUSH	temp1				; Поместить значение регистра в стек
-                                 INC_Second:	
-000069 9100 0060                 	LDS		temp1,	Second	; Пересылка из I/O-регистра в регистр
-00006b 9503                      	INC		temp1				; Инкремент
-00006c 330c                      	CPI		temp1, 60			; если temp1 >= 60	
-00006d f438                      	BRSH	INC_Minute
-00006e 9300 0060                 	STS		Second, temp1	; Прямое сохранение (в ОЗУ)
-                                 	INC_Minute_Ret:				; Работа с PORTC в подпрограмме(ах)
-000070 910f                      	POP		temp1				; Извлечь значение регистра из стека
-000071 bf0f                      	OUT		SREG,	temp1		; Вывод в пространство ввода/вывода
-000072 910f                      	POP		temp1				; Извлечь значение регистра из стека
-000073 9478                      	SEI							; Разрешение прерываний
-000074 9518                      	RETI						; Возврат из прерывания
-                                 
-                                 INC_Minute:
-000075 9390 0060                 	STS		Second, null		; обнуление Second
-000077 9110 0061                 	LDS		temp2,	Minute		; выгрузка Minute
-000079 9513                      	INC		temp2				; инкремент Minute
-00007a 331c                      	CPI		temp2, 60			; сравнение Minute и 60
-00007b f420                      	BRSH	INC_Hour
-00007c 9310 0061                 	STS		Minute, temp2		; загрузка Minute (< 60)
-                                 	INC_Hour_Ret:
-00007e 940c 0070                 	JMP		INC_Minute_Ret
-                                 
-                                 INC_Hour:
-000080 9390 0061                 	STS		Minute, null		; обнуление Minute
-000082 9120 0062                 	LDS		temp3,	Hour		; выгрузка Hour
-000084 9523                      	INC		temp3				; инкремент Hour
-000085 3128                      	CPI		temp3, 24			; сравнение Hour и 24
-000086 f420                      	BRSH	Null_Hour
-000087 9320 0062                 	STS		Hour, temp3			; загрузка Hour (< 24)
-                                 	Null_Hour_Ret:
-000089 940c 007e                 	JMP		INC_Hour_Ret
-                                 
-                                 Null_Hour:
-00008b 9390 0062                 	STS		Hour, null
-00008d 940c 0089                 	JMP		Null_Hour_Ret
+                                 msg_hw:
+00008c 6548
+00008d 6c6c
+00008e 2c6f
+00008f 7720
+000090 726f
+000091 646c
+000092 2021
 
 
 RESOURCE USE INFORMATION
@@ -1031,40 +1013,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega32" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  41 r17:   7 r18:   9 r19:   0 r20:   0 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   7 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:   0 r31:   0 
-Registers used: 4 out of 35 (11.4%)
+r13:   0 r14:   0 r15:   0 r16:  50 r17:   8 r18:   0 r19:   0 r20:   0 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
+r29:   0 r30:   2 r31:   2 
+Registers used: 5 out of 35 (14.3%)
 
 "ATmega32" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   0 brpl  :   0 brsh  :   3 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   2 cln   :   0 clr   :   2 cls   :   0 
+brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   8 cbi   :   0 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   3 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   3 inc   :   4 jmp   :   8 
-ld    :   0 ldd   :   0 ldi   :  14 lds   :   3 lpm   :   0 lsl   :   0 
+cpi   :   3 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   2 inc   :   1 jmp   :   4 
+ld    :   0 ldd   :   0 ldi   :  24 lds   :   0 lpm   :   1 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   5 or    :   0 ori   :   0 out   :  16 pop   :   5 
-push  :   5 rcall :   0 ret   :   0 reti  :   2 rjmp  :   0 rol   :   0 
+neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :  18 pop   :   4 
+push  :   4 rcall :   0 ret   :   4 reti  :   0 rjmp  :   0 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
-sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
-sei   :   3 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   9 
+sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   0 sec   :   0 seh   :   0 
+sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
+sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   0 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 Instructions used: 16 out of 113 (14.2%)
 
 "ATmega32" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00011e    214      0    214   32768   0.7%
-[.dseg] 0x000060 0x000063      0      3      3    2048   0.1%
+[.cseg] 0x000000 0x000128    188     16    204   32768   0.6%
+[.dseg] 0x000060 0x000061      0      1      1    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

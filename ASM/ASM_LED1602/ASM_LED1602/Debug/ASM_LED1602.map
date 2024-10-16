@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Mdaaaa\MicroChip_Projects\Assembler\Assembler\Assembler\main.asm Mon Oct 09 14:51:59 2023
+AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Sat Oct 12 18:39:12 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -568,22 +568,21 @@ EQU  ACIaddr      00000024
 EQU  TWIaddr      00000026
 EQU  SPMRaddr     00000028
 EQU  INT_VECTORS_SIZE 0000002a
+EQU  E            00000001
+EQU  RW           00000002
+EQU  RS           00000004
+EQU  msg_hw_size  00000010
 DEF  temp1        r16
-DEF  temp2        r17
-DEF  temp3        r18
-DEF  temp4        r19
-DEF  null         r25
-DSEG Second       00000060
-DSEG Minute       00000061
-DSEG Hour         00000062
-CSEG RESET        0000002a
-CSEG TIM2_COMP    00000057
-CSEG TIM1_COMPA   00000065
-CSEG Start        00000050
-CSEG INC_Second   00000069
-CSEG INC_Minute   00000075
-CSEG INC_Minute_Ret 00000070
-CSEG INC_Hour     00000080
-CSEG INC_Hour_Ret 0000007e
-CSEG Null_Hour    0000008b
-CSEG Null_Hour_Ret 00000089
+DSEG RAM_var      00000060
+CSEG reset        00000030
+CSEG main         0000003a
+CSEG send_cmd_r16 00000053
+CSEG msg_hw       0000008c
+CSEG loop         0000004b
+CSEG send_data_r16 0000005d
+CSEG end          00000051
+CSEG BF_check     00000067
+CSEG BF_check_loop 0000006a
+CSEG delay        0000007b
+CSEG delay_d2     00000080
+CSEG delay_d1     00000081

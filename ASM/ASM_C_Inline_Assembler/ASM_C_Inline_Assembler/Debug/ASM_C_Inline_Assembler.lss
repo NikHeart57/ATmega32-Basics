@@ -1,0 +1,146 @@
+
+ASM_C_Inline_Assembler.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000a8  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000000fc  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000000fc  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000012c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000048  00000000  00000000  00000168  2**3
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000064b  00000000  00000000  000001b0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000559  00000000  00000000  000007fb  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000026a  00000000  00000000  00000d54  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000034  00000000  00000000  00000fc0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000302  00000000  00000000  00000ff4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 00000018  00000000  00000000  000012f6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 48 00 	call	0x90	; 0x90 <main>
+  64:	0c 94 52 00 	jmp	0xa4	; 0xa4 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <wait>:
+.global wait								; указываем, что функция (символ) wait глобальный (доступен из других объектных файлов)
+
+; Эта функция принимает 1 8-и битный параметр через регистр, согласно AVR GCC Calling convention
+wait:
+	; Сохраняем в стек значения всех регистров которые будут использоваться в функции
+	push r18	
+  6c:	2f 93       	push	r18
+	push r19
+  6e:	3f 93       	push	r19
+	push r24
+  70:	8f 93       	push	r24
+	
+	; Переносим переданное значение в регистры r18 и r19
+	mov r18, r24
+  72:	28 2f       	mov	r18, r24
+	mov r19, r24
+  74:	38 2f       	mov	r19, r24
+
+00000076 <_wait_loop>:
+_wait_loop:									; Метка wait цикла
+	dec  r18								; Уменьшаем значение в регистре r18 на 1
+  76:	2a 95       	dec	r18
+    brne _wait_loop							; Переходим в начало цикла, если регистр r18 не равен 0
+  78:	f1 f7       	brne	.-4      	; 0x76 <_wait_loop>
+	dec  r19								; Уменьшаем значение в регистре r19 на 1
+  7a:	3a 95       	dec	r19
+    brne _wait_loop							; Переходим в начало цикла, если регистр r19 не равен 0
+  7c:	e1 f7       	brne	.-8      	; 0x76 <_wait_loop>
+	dec  r24								; Уменьшаем значение в регистре r24 на 1
+  7e:	8a 95       	dec	r24
+    brne _wait_loop							; Переходим в начало цикла, если регистр r24 не равен 0
+  80:	d1 f7       	brne	.-12     	; 0x76 <_wait_loop>
+	
+	; Восстанавливаем значения использованных регистров из стека (Восстанавливаются регистры в порядке обратном порядку их сохранения)
+	pop r24
+  82:	8f 91       	pop	r24
+	pop r19
+  84:	3f 91       	pop	r19
+	pop r18									
+  86:	2f 91       	pop	r18
+	ret
+  88:	08 95       	ret
+
+0000008a <init>:
+	return 0;
+}
+
+static void init(void)
+{
+	DDRB = 0x20;			// Устанавливаем в бит 5 в DDRB (Data Direction Register B) 1 это говорит Arduino, что pin 13 на порту B будет выходным сигналом.
+  8a:	80 e2       	ldi	r24, 0x20	; 32
+  8c:	87 bb       	out	0x17, r24	; 23
+  8e:	08 95       	ret
+
+00000090 <main>:
+
+extern void wait(uint8_t param);
+
+int main(void)
+{
+	init();
+  90:	0e 94 45 00 	call	0x8a	; 0x8a <init>
+	while(1)
+	{
+		PORTB ^= 0x20;	// Устанавливаем/сбрасываем бит 5 (биты считаются от 0) PORTB регистра (загорается/гаснет встроенный Arduino светодиод)
+  94:	98 b3       	in	r25, 0x18	; 24
+  96:	80 e2       	ldi	r24, 0x20	; 32
+  98:	89 27       	eor	r24, r25
+  9a:	88 bb       	out	0x18, r24	; 24
+		wait(50);
+  9c:	82 e3       	ldi	r24, 0x32	; 50
+  9e:	0e 94 36 00 	call	0x6c	; 0x6c <wait>
+  a2:	f8 cf       	rjmp	.-16     	; 0x94 <main+0x4>
+
+000000a4 <_exit>:
+  a4:	f8 94       	cli
+
+000000a6 <__stop_program>:
+  a6:	ff cf       	rjmp	.-2      	; 0xa6 <__stop_program>
