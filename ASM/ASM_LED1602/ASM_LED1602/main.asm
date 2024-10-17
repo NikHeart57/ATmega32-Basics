@@ -92,30 +92,42 @@ RAM_LED1602_byte:		.byte 1						; Функция LCD1602_send_cmd и LCD1602_send_data
 .cseg
 .org		$0000
   	jmp		RESET
-.org		INT_VECTORS_SIZE						; INT_VECTORS_SIZE = 42
+.org		INT_VECTORS_SIZE						; INT_VECTORS_SIZE = 0d42 = 0x2A
 
 ; ***** УЧАСТОК ВЕКТОРОВ ПРЕРЫВАНИЙ *****
 ; ***** ВЕКТОР ПРЕРЫВАНИЯ RESET *****
-.org		INT_VECTORS_SIZE
 RESET:
 	cli
-	ldi		r16,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
-    out		SPL,	r16								; SP - регистер стек пойнтера
-	ldi		r16,	High(RAMEND)
-	out		SPH,	r16
+	ldi		temp0,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
+    out		SPL,	temp0							; SP - регистер стек пойнтера
+	ldi		temp0,	High(RAMEND)
+	out		SPH,	temp0
 
-	ldi		r16,	0b11111111						; Порты I/O	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
-	out		DDRA,	r16								; Отправка значения temp1 в регистр DDRC
-	ldi		r16,	0b00000111	
-	out		DDRB,	r16
+	ldi		temp0,	0b11111111						; Порты I/O	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
+	out		DDRA,	temp0							; Отправка значения temp1 в регистр DDRC
+	ldi		temp0,	0b00000111	
+	out		DDRB,	temp0
+
 	sei
 	jmp		main
 
 
 ; ***** УЧАСТОК РЕЗЕРВИРОВАНИЯ КОНСТАНТ ВО FLASH ПАМЯТИ *****
-msg_hw:
-   .db		"Hello, world!", 0
+msg_time_leters:
+	.db		0b11100000, 0b11100000, 0b11110001, 0b11111011, 0b11110101, 0b11110001, 0b11110001, 0b11100000	 		; Буква 1 - м
+	.db		0b11100000, 0b11100000, 0b11101111, 0b11110001, 0b11101111, 0b11110001, 0b11110001, 0b11100000	 		; Буква 2 - я
+	.db		0b11100000, 0b11100000, 0b11101000, 0b11100000, 0b11100000, 0b11101000, 0b11100000, 0b11100000, 0, 0	; Буква 3 - :
+msg_setting_leters:
+	.db		0b11100000, 0b11100000, 0b11111111, 0b11100100, 0b11100100, 0b11100100, 0b11100100, 0b11100000			; Буква 1 - т
+	.db		0b11100010, 0b11100100, 0b11110001, 0b11110011, 0b11110101, 0b11111001, 0b11110001, 0b11100000			; Буква 2 - й
+	.db		0b11100000, 0b11100000, 0b11110001, 0b11110010, 0b11111100, 0b11110010, 0b11110001, 0b11100000			; Буква 3 - к
+	.db		0b11100000, 0b11100000, 0b11110001, 0b11110001, 0b11101111, 0b11100001, 0b11100001, 0b11100000			; Буква 4 - ч
+	.db		0b11100000, 0b11100000, 0b11111110, 0b11110001, 0b11111110, 0b11110001, 0b11111110, 0b11100000, 0, 0	; Буква 5 - в
 
+msg_time:
+	.db		66, 112, 101, 1, 2, 3, 0, 0											; Bpe123 - Время:
+msg_setting:
+	.db		72, 97, 99, 1, 112, 111, 2, 3, 97, 32, 4, 97, 99, 111, 5, 0			; Hac1po23a 4aco5 - Настройка часов
 
 ; ***** УЧАСТОК МАКРОСОВ *****
 ;.macro	macro_name
@@ -143,14 +155,66 @@ main:
 	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
 	sts		RAM_LED1602_byte, temp0
 	call	LCD1602_send_cmd
+	; Конец инициализации экрана
+
 
 
 	; Печать массива. Сначала загрузка в ОЗУ адреса массива для печати, затем вызов подпрограммы печати
-	ldi		ZH,		high(msg_hw << 1)				; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+
+	ldi		temp0,	0b01001000						; Определение адреса 8 в памяти CGRAM 						
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		ZH,		high(msg_time_leters << 1)		; Подгрузка необходимых букв
 	sts		RAM_LED1602_ZH,	ZH
-	ldi		ZL,		low(msg_hw << 1)
+	ldi		ZL,		low(msg_time_leters << 1)
 	sts		RAM_LED1602_ZL,	ZL
 	call	LCD1602_print_string
+	
+	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		ZH,		high(msg_time << 1)				; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+	sts		RAM_LED1602_ZH,	ZH
+	ldi		ZL,		low(msg_time << 1)
+	sts		RAM_LED1602_ZL,	ZL
+	call	LCD1602_print_string
+
+
+	ldi		temp0,	100
+main_loop:
+	ldi		intvar1,	255	
+	sts		RAM_delay_loop0,	intvar1
+	ldi		intvar1,	255
+	sts		RAM_delay_loop1,	intvar1
+	call	delay
+	dec		temp0
+	cpi		temp0,	0
+	brne	main_loop
+
+
+	ldi		temp0,	0b01001000						; Определение адреса 8 в памяти CGRAM 						
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		ZH,		high(msg_setting_leters << 1)	; Подгрузка необходимых букв
+	sts		RAM_LED1602_ZH,	ZH
+	ldi		ZL,		low(msg_setting_leters << 1)
+	sts		RAM_LED1602_ZL,	ZL
+	call	LCD1602_print_string
+	
+	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+	sts		RAM_LED1602_byte, temp0
+	call	LCD1602_send_cmd
+
+	ldi		ZH,		high(msg_setting << 1)			; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+	sts		RAM_LED1602_ZH,	ZH
+	ldi		ZL,		low(msg_setting << 1)
+	sts		RAM_LED1602_ZL,	ZL
+	call	LCD1602_print_string
+
+
 
 main_end:
 	jmp		main_end
@@ -209,11 +273,11 @@ LCD1602_send_data:
 	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
 	out		PORTA,		intvar0
 
-	ldi		intvar0,	0							; Такт порта 
+	ldi		intvar0,	RS							; Такт порта 
 	out		PORTB,		intvar0
 	ldi		intvar0,	(RS|E)
 	out		PORTB,		intvar0
-	ldi		intvar0,	0
+	ldi		intvar0,	RS
 	out		PORTB,		intvar0
 	sei
 	ret

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Thu Oct 17 00:06:30 2024
+AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Thu Oct 17 20:46:54 2024
 
 
 EQU  SIGNATURE_000 0000001e
@@ -588,16 +588,20 @@ DSEG RAM_LED1602_ZL 00000062
 DSEG RAM_LED1602_ZH 00000063
 DSEG RAM_LED1602_byte 00000064
 CSEG RESET        0000002a
-CSEG main         0000003d
-CSEG msg_hw       00000036
-CSEG LCD1602_send_cmd 0000007a
-CSEG LCD1602_print_string 0000005b
-CSEG main_end     00000059
-CSEG LCD1602_print_string_loop 00000061
-CSEG LCD1602_print_string_exit 00000069
-CSEG LCD1602_send_data 0000006c
-CSEG BF_check     00000088
-CSEG BF_check_loop 0000008a
-CSEG delay        0000009f
-CSEG delay_loop1  000000a3
-CSEG delay_loop0  000000a5
+CSEG main         00000064
+CSEG msg_time_leters 00000036
+CSEG msg_setting_leters 00000043
+CSEG msg_time     00000058
+CSEG msg_setting  0000005c
+CSEG LCD1602_send_cmd 000000d9
+CSEG LCD1602_print_string 000000ba
+CSEG main_loop    00000093
+CSEG delay        000000fe
+CSEG main_end     000000b8
+CSEG LCD1602_print_string_loop 000000c0
+CSEG LCD1602_print_string_exit 000000c8
+CSEG LCD1602_send_data 000000cb
+CSEG BF_check     000000e7
+CSEG BF_check_loop 000000e9
+CSEG delay_loop1  00000102
+CSEG delay_loop0  00000104

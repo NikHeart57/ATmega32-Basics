@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Thu Oct 17 00:06:30 2024
+AVRASM ver. 2.2.8  C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm Thu Oct 17 20:46:54 2024
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
 C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\main.asm(57): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc'
@@ -958,36 +958,78 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  .cseg
                                  .org		$0000
 000000 940c 002a                   	jmp		RESET
-                                 .org		INT_VECTORS_SIZE						; INT_VECTORS_SIZE = 42
+                                 .org		INT_VECTORS_SIZE						; INT_VECTORS_SIZE = 0d42 = 0x2A
                                  
                                  ; ***** УЧАСТОК ВЕКТОРОВ ПРЕРЫВАНИЙ *****
                                  ; ***** ВЕКТОР ПРЕРЫВАНИЯ RESET *****
-                                 .org		INT_VECTORS_SIZE
                                  RESET:
 00002a 94f8                      	cli
-00002b e50f                      	ldi		r16,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
-00002c bf0d                          out		SPL,	r16								; SP - регистер стек пойнтера
-00002d e008                      	ldi		r16,	High(RAMEND)
-00002e bf0e                      	out		SPH,	r16
+00002b e50f                      	ldi		temp0,	Low(RAMEND)						; Инициализация стека - Обязательно!!!
+00002c bf0d                          out		SPL,	temp0							; SP - регистер стек пойнтера
+00002d e008                      	ldi		temp0,	High(RAMEND)
+00002e bf0e                      	out		SPH,	temp0
                                  
-00002f ef0f                      	ldi		r16,	0b11111111						; Порты I/O	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
-000030 bb0a                      	out		DDRA,	r16								; Отправка значения temp1 в регистр DDRC
-000031 e007                      	ldi		r16,	0b00000111	
-000032 bb07                      	out		DDRB,	r16
+00002f ef0f                      	ldi		temp0,	0b11111111						; Порты I/O	; Запись числа в регистр temp1 (r16)	*(1 - выход, 0 - вход)
+000030 bb0a                      	out		DDRA,	temp0							; Отправка значения temp1 в регистр DDRC
+000031 e007                      	ldi		temp0,	0b00000111	
+000032 bb07                      	out		DDRB,	temp0
+                                 
 000033 9478                      	sei
-000034 940c 003d                 	jmp		main
+000034 940c 0064                 	jmp		main
                                  
                                  
                                  ; ***** УЧАСТОК РЕЗЕРВИРОВАНИЯ КОНСТАНТ ВО FLASH ПАМЯТИ *****
-                                 msg_hw:
-000036 6548
-000037 6c6c
-000038 2c6f
-000039 7720
-00003a 726f
-00003b 646c
-00003c 0021                         .db		"Hello, world!", 0
+                                 msg_time_leters:
+000036 e0e0
+000037 fbf1
+000038 f1f5
+000039 e0f1                      	.db		0b11100000, 0b11100000, 0b11110001, 0b11111011, 0b11110101, 0b11110001, 0b11110001, 0b11100000	 		; Буква 1 - м
+00003a e0e0
+00003b f1ef
+00003c f1ef
+00003d e0f1                      	.db		0b11100000, 0b11100000, 0b11101111, 0b11110001, 0b11101111, 0b11110001, 0b11110001, 0b11100000	 		; Буква 2 - я
+00003e e0e0
+00003f e0e8
+000040 e8e0
+000041 e0e0
+000042 0000                      	.db		0b11100000, 0b11100000, 0b11101000, 0b11100000, 0b11100000, 0b11101000, 0b11100000, 0b11100000, 0, 0	; Буква 3 - :
+                                 msg_setting_leters:
+000043 e0e0
+000044 e4ff
+000045 e4e4
+000046 e0e4                      	.db		0b11100000, 0b11100000, 0b11111111, 0b11100100, 0b11100100, 0b11100100, 0b11100100, 0b11100000			; Буква 1 - т
+000047 e4e2
+000048 f3f1
+000049 f9f5
+00004a e0f1                      	.db		0b11100010, 0b11100100, 0b11110001, 0b11110011, 0b11110101, 0b11111001, 0b11110001, 0b11100000			; Буква 2 - й
+00004b e0e0
+00004c f2f1
+00004d f2fc
+00004e e0f1                      	.db		0b11100000, 0b11100000, 0b11110001, 0b11110010, 0b11111100, 0b11110010, 0b11110001, 0b11100000			; Буква 3 - к
+00004f e0e0
+000050 f1f1
+000051 e1ef
+000052 e0e1                      	.db		0b11100000, 0b11100000, 0b11110001, 0b11110001, 0b11101111, 0b11100001, 0b11100001, 0b11100000			; Буква 4 - ч
+000053 e0e0
+000054 f1fe
+000055 f1fe
+000056 e0fe
+000057 0000                      	.db		0b11100000, 0b11100000, 0b11111110, 0b11110001, 0b11111110, 0b11110001, 0b11111110, 0b11100000, 0, 0	; Буква 5 - в
                                  
+                                 msg_time:
+000058 7042
+000059 0165
+00005a 0302
+00005b 0000                      	.db		66, 112, 101, 1, 2, 3, 0, 0											; Bpe123 - Время:
+                                 msg_setting:
+00005c 6148
+00005d 0163
+00005e 6f70
+00005f 0302
+000060 2061
+000061 6104
+000062 6f63
+000063 0005                      	.db		72, 97, 99, 1, 112, 111, 2, 3, 97, 32, 4, 97, 99, 111, 5, 0			; Hac1po23a 4aco5 - Настройка часов
                                  
                                  ; ***** УЧАСТОК МАКРОСОВ *****
                                  ;.macro	macro_name
@@ -1000,32 +1042,84 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  ; ***** НАЧАЛО ПРОГРАММЫ *****
                                  main:
                                  	; Инициализация экрана 
-00003d e308                      	ldi		temp0,	0b00111000						; 0b00111000 - 8bit line, 2 row mode, 5x8 font
-00003e 9300 0064                 	sts		RAM_LED1602_byte, temp0
-000040 940e 007a                 	call	LCD1602_send_cmd
+000064 e308                      	ldi		temp0,	0b00111000						; 0b00111000 - 8bit line, 2 row mode, 5x8 font
+000065 9300 0064                 	sts		RAM_LED1602_byte, temp0
+000067 940e 00d9                 	call	LCD1602_send_cmd
                                  
-000042 e00c                      	ldi		temp0,	0b00001100						; 0b00001100 - Turns on display and cursor
-000043 9300 0064                 	sts		RAM_LED1602_byte, temp0
-000045 940e 007a                 	call	LCD1602_send_cmd
+000069 e00c                      	ldi		temp0,	0b00001100						; 0b00001100 - Turns on display and cursor
+00006a 9300 0064                 	sts		RAM_LED1602_byte, temp0
+00006c 940e 00d9                 	call	LCD1602_send_cmd
                                  
-000047 e006                      	ldi		temp0,	0b00000110						; 0b00000110 - Sets mode to increment the address by one and to shift the cursor to the right at the time of write to the DD/CGRAM.
-000048 9300 0064                 	sts		RAM_LED1602_byte, temp0
-00004a 940e 007a                 	call	LCD1602_send_cmd
+00006e e006                      	ldi		temp0,	0b00000110						; 0b00000110 - Sets mode to increment the address by one and to shift the cursor to the right at the time of write to the DD/CGRAM.
+00006f 9300 0064                 	sts		RAM_LED1602_byte, temp0
+000071 940e 00d9                 	call	LCD1602_send_cmd
                                  
-00004c e001                      	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
-00004d 9300 0064                 	sts		RAM_LED1602_byte, temp0
-00004f 940e 007a                 	call	LCD1602_send_cmd
+000073 e001                      	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+000074 9300 0064                 	sts		RAM_LED1602_byte, temp0
+000076 940e 00d9                 	call	LCD1602_send_cmd
+                                 	; Конец инициализации экрана
+                                 
                                  
                                  
                                  	; Печать массива. Сначала загрузка в ОЗУ адреса массива для печати, затем вызов подпрограммы печати
-000051 e0f0                      	ldi		ZH,		high(msg_hw << 1)				; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
-000052 93f0 0063                 	sts		RAM_LED1602_ZH,	ZH
-000054 e6ec                      	ldi		ZL,		low(msg_hw << 1)
-000055 93e0 0062                 	sts		RAM_LED1602_ZL,	ZL
-000057 940e 005b                 	call	LCD1602_print_string
+                                 
+000078 e408                      	ldi		temp0,	0b01001000						; Определение адреса 8 в памяти CGRAM 						
+000079 9300 0064                 	sts		RAM_LED1602_byte, temp0
+00007b 940e 00d9                 	call	LCD1602_send_cmd
+                                 
+00007d e0f0                      	ldi		ZH,		high(msg_time_leters << 1)		; Подгрузка необходимых букв
+00007e 93f0 0063                 	sts		RAM_LED1602_ZH,	ZH
+000080 e6ec                      	ldi		ZL,		low(msg_time_leters << 1)
+000081 93e0 0062                 	sts		RAM_LED1602_ZL,	ZL
+000083 940e 00ba                 	call	LCD1602_print_string
+                                 	
+000085 e001                      	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+000086 9300 0064                 	sts		RAM_LED1602_byte, temp0
+000088 940e 00d9                 	call	LCD1602_send_cmd
+                                 
+00008a e0f0                      	ldi		ZH,		high(msg_time << 1)				; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+00008b 93f0 0063                 	sts		RAM_LED1602_ZH,	ZH
+00008d ebe0                      	ldi		ZL,		low(msg_time << 1)
+00008e 93e0 0062                 	sts		RAM_LED1602_ZL,	ZL
+000090 940e 00ba                 	call	LCD1602_print_string
+                                 
+                                 
+000092 e604                      	ldi		temp0,	100
+                                 main_loop:
+000093 ef7f                      	ldi		intvar1,	255	
+000094 9370 0060                 	sts		RAM_delay_loop0,	intvar1
+000096 ef7f                      	ldi		intvar1,	255
+000097 9370 0061                 	sts		RAM_delay_loop1,	intvar1
+000099 940e 00fe                 	call	delay
+00009b 950a                      	dec		temp0
+00009c 3000                      	cpi		temp0,	0
+00009d f7a9                      	brne	main_loop
+                                 
+                                 
+00009e e408                      	ldi		temp0,	0b01001000						; Определение адреса 8 в памяти CGRAM 						
+00009f 9300 0064                 	sts		RAM_LED1602_byte, temp0
+0000a1 940e 00d9                 	call	LCD1602_send_cmd
+                                 
+0000a3 e0f0                      	ldi		ZH,		high(msg_setting_leters << 1)	; Подгрузка необходимых букв
+0000a4 93f0 0063                 	sts		RAM_LED1602_ZH,	ZH
+0000a6 e8e6                      	ldi		ZL,		low(msg_setting_leters << 1)
+0000a7 93e0 0062                 	sts		RAM_LED1602_ZL,	ZL
+0000a9 940e 00ba                 	call	LCD1602_print_string
+                                 	
+0000ab e001                      	ldi		temp0,	0b00000001						; 0b00000001 - Clear screen
+0000ac 9300 0064                 	sts		RAM_LED1602_byte, temp0
+0000ae 940e 00d9                 	call	LCD1602_send_cmd
+                                 
+0000b0 e0f0                      	ldi		ZH,		high(msg_setting << 1)			; Инициализация Z-указателя. Загрузка в него значения ардеса по которому лежит массив
+0000b1 93f0 0063                 	sts		RAM_LED1602_ZH,	ZH
+0000b3 ebe8                      	ldi		ZL,		low(msg_setting << 1)
+0000b4 93e0 0062                 	sts		RAM_LED1602_ZL,	ZL
+0000b6 940e 00ba                 	call	LCD1602_print_string
+                                 
+                                 
                                  
                                  main_end:
-000059 940c 0059                 	jmp		main_end
+0000b8 940c 00b8                 	jmp		main_end
                                  ; ***** КОНЕЦ ПРОГРАММЫ *****
                                  
                                  
@@ -1043,23 +1137,23 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  	push	temp3
                                  	push	temp4
                                  	push	temp5*/
-00005b b79f                      	in		intvar3,	sreg
-00005c 939f                      	push	intvar3
+0000ba b79f                      	in		intvar3,	sreg
+0000bb 939f                      	push	intvar3
                                  	
-00005d 91e0 0062                 	lds		ZL,	RAM_LED1602_ZL						; Выгрузка данных из ОЗУ
-00005f 91f0 0063                 	lds		ZH,	RAM_LED1602_ZH
+0000bc 91e0 0062                 	lds		ZL,	RAM_LED1602_ZL						; Выгрузка данных из ОЗУ
+0000be 91f0 0063                 	lds		ZH,	RAM_LED1602_ZH
                                  
                                  LCD1602_print_string_loop:
-000061 9165                      	lpm		intvar0,	Z+							; Загрузка байта по адресу Z в регистр intvar0 c постинкрементом
-000062 3060                      	cpi		intvar0,	'\0'						; Сравнение значения в регистре intvar0 с нуль-терминатором
-000063 f029                      	breq	LCD1602_print_string_exit				; Если там нуль-терминатор то выход из подпрограммы
-000064 9360 0064                 	sts		RAM_LED1602_byte,	intvar0				; А если не нуль-терминатор то загрузить адрес в ОЗУ байт для печати				
-000066 940e 006c                 	call	LCD1602_send_data						; и вызвать подпрограмму печати сивмола
-000068 f7c1                      	brne	LCD1602_print_string_loop				; и снова повторить цикл
+0000c0 9165                      	lpm		intvar0,	Z+							; Загрузка байта по адресу Z в регистр intvar0 c постинкрементом
+0000c1 3060                      	cpi		intvar0,	'\0'						; Сравнение значения в регистре intvar0 с нуль-терминатором
+0000c2 f029                      	breq	LCD1602_print_string_exit				; Если там нуль-терминатор то выход из подпрограммы
+0000c3 9360 0064                 	sts		RAM_LED1602_byte,	intvar0				; А если не нуль-терминатор то загрузить адрес в ОЗУ байт для печати				
+0000c5 940e 00cb                 	call	LCD1602_send_data						; и вызвать подпрограмму печати сивмола
+0000c7 f7c1                      	brne	LCD1602_print_string_loop				; и снова повторить цикл
                                  
                                  LCD1602_print_string_exit:
-000069 919f                      	pop		intvar3
-00006a bf9f                      	out		SREG,	intvar3
+0000c8 919f                      	pop		intvar3
+0000c9 bf9f                      	out		SREG,	intvar3
                                    /*pop		temp5
                                  	pop		temp4
                                  	pop		temp3
@@ -1067,7 +1161,7 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  	pop		temp1
                                  	pop		temp0
                                  	sei*/
-00006b 9508                      	ret
+0000ca 9508                      	ret
                                  
                                  
                                  ; ***** ПОДПРОРАММА ОТПРАКИ ДАННЫХ НА ЭКРАН *****
@@ -1075,20 +1169,20 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  ; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
                                  ; *Требуется запрещение прерываний так как происходит общение с периферией (PORTA, PORTB)
                                  LCD1602_send_data:
-00006c 94f8                      	cli
-00006d 940e 0088                 	call	BF_check								; Проверка флага занятости
+0000cb 94f8                      	cli
+0000cc 940e 00e7                 	call	BF_check								; Проверка флага занятости
                                  
-00006f 9160 0064                 	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
-000071 bb6b                      	out		PORTA,		intvar0
+0000ce 9160 0064                 	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
+0000d0 bb6b                      	out		PORTA,		intvar0
                                  
-000072 e060                      	ldi		intvar0,	0							; Такт порта 
-000073 bb68                      	out		PORTB,		intvar0
-000074 e065                      	ldi		intvar0,	(RS|E)
-000075 bb68                      	out		PORTB,		intvar0
-000076 e060                      	ldi		intvar0,	0
-000077 bb68                      	out		PORTB,		intvar0
-000078 9478                      	sei
-000079 9508                      	ret
+0000d1 e064                      	ldi		intvar0,	RS							; Такт порта 
+0000d2 bb68                      	out		PORTB,		intvar0
+0000d3 e065                      	ldi		intvar0,	(RS|E)
+0000d4 bb68                      	out		PORTB,		intvar0
+0000d5 e064                      	ldi		intvar0,	RS
+0000d6 bb68                      	out		PORTB,		intvar0
+0000d7 9478                      	sei
+0000d8 9508                      	ret
                                  
                                  
                                  ; ***** ПОДПРОРАММА ОТПРАКИ КОМАНДЫ НА ЭКРАН *****
@@ -1096,20 +1190,20 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  ; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
                                  ; *Требуется запрещение прерываний так как происходит общение с периферией (PORTA, PORTB)
                                  LCD1602_send_cmd:
-00007a 94f8                      	cli
-00007b 940e 0088                 	call	BF_check								; Проверка флага занятости
+0000d9 94f8                      	cli
+0000da 940e 00e7                 	call	BF_check								; Проверка флага занятости
                                  
-00007d 9160 0064                 	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
-00007f bb6b                      	out		PORTA,		intvar0
+0000dc 9160 0064                 	lds		intvar0,	RAM_LED1602_byte			; Выгрузка данных из ОЗУ
+0000de bb6b                      	out		PORTA,		intvar0
                                  
-000080 e060                      	ldi		intvar0,	0							; Такт порта 
-000081 bb68                      	out		PORTB,		intvar0
-000082 e061                      	ldi		intvar0,	E
-000083 bb68                      	out		PORTB,		intvar0
-000084 e060                      	ldi		intvar0,	0
-000085 bb68                      	out		PORTB,		intvar0
-000086 9478                      	sei
-000087 9508                      	ret
+0000df e060                      	ldi		intvar0,	0							; Такт порта 
+0000e0 bb68                      	out		PORTB,		intvar0
+0000e1 e061                      	ldi		intvar0,	E
+0000e2 bb68                      	out		PORTB,		intvar0
+0000e3 e060                      	ldi		intvar0,	0
+0000e4 bb68                      	out		PORTB,		intvar0
+0000e5 9478                      	sei
+0000e6 9508                      	ret
                                  
                                  
                                  ; ***** ПОДПРОРАММА ПРОВЕРКИ ФЛАГА ЗАНЯТОСТИ ЭКРАНА *****
@@ -1117,30 +1211,30 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  ; *Не требуется сохранение регистра статуса так как не происходит сравнение внутри подпрограммы
                                  ; *Не требуется запрещение прерываний так как, хотя и происходит общение с периферией (PORTA, PORTB), запрещение уже сделано в родительской функции LCD1602_send_cmd и LCD1602_send_data
                                  BF_check:
-000088 e070                      	ldi		intvar1,	0b00000000					; Порт A на ввод данных		
-000089 bb7a                      	out		DDRA,		intvar1
+0000e7 e070                      	ldi		intvar1,	0b00000000					; Порт A на ввод данных		
+0000e8 bb7a                      	out		DDRA,		intvar1
                                  
                                  BF_check_loop:
-00008a e072                      	ldi		intvar1,	RW							; Такт порта 
-00008b bb78                      	out		PORTB,		intvar1
-00008c e073                      	ldi		intvar1,	(RW|E)
-00008d bb78                      	out		PORTB,		intvar1
-00008e e072                      	ldi		intvar1,	RW
-00008f bb78                      	out		PORTB,		intvar1
+0000e9 e072                      	ldi		intvar1,	RW							; Такт порта 
+0000ea bb78                      	out		PORTB,		intvar1
+0000eb e073                      	ldi		intvar1,	(RW|E)
+0000ec bb78                      	out		PORTB,		intvar1
+0000ed e072                      	ldi		intvar1,	RW
+0000ee bb78                      	out		PORTB,		intvar1
                                  
-000090 b379                      	in		intvar1,	PINA						; Чтение порта данных
-000091 fd77                      	sbrc	intvar1,	7							; Проверка пина флага занятости
-000092 940c 008a                 	jmp		BF_check_loop							; Если есть флаг занятости то повторить проверку
+0000ef b379                      	in		intvar1,	PINA						; Чтение порта данных
+0000f0 fd77                      	sbrc	intvar1,	7							; Проверка пина флага занятости
+0000f1 940c 00e9                 	jmp		BF_check_loop							; Если есть флаг занятости то повторить проверку
                                  
-000094 ef7f                      	ldi		intvar1,	0b11111111					; Если нет флага занятости то выйти из подпрограммы		
-000095 bb7a                      	out		DDRA,		intvar1
+0000f3 ef7f                      	ldi		intvar1,	0b11111111					; Если нет флага занятости то выйти из подпрограммы		
+0000f4 bb7a                      	out		DDRA,		intvar1
                                  	
-000096 e07a                      	ldi		intvar1,	10							; Перед выходом из подпрограммы вызвать задержку на 4 * RAM_delay_loop1 * RAM_delay_loop0 + 38 = 438 тактов
-000097 9370 0060                 	sts		RAM_delay_loop0,	intvar1
-000099 e07a                      	ldi		intvar1,	10
-00009a 9370 0061                 	sts		RAM_delay_loop1,	intvar1
-00009c 940e 009f                 	call	delay
-00009e 9508                      	ret
+0000f5 e07a                      	ldi		intvar1,	10							; Перед выходом из подпрограммы вызвать задержку на 4 * RAM_delay_loop1 * RAM_delay_loop0 + 38 = 438 тактов
+0000f6 9370 0060                 	sts		RAM_delay_loop0,	intvar1
+0000f8 e07a                      	ldi		intvar1,	10
+0000f9 9370 0061                 	sts		RAM_delay_loop1,	intvar1
+0000fb 940e 00fe                 	call	delay
+0000fd 9508                      	ret
                                  
                                  
                                  ; ***** ПОДПРОРАММА ЗАДЕРЖКИ *****
@@ -1148,23 +1242,23 @@ C:\Users\KolyaPC\Desktop\Microchip\ATmega32-Basics\ASM\ASM_LED1602\ASM_LED1602\m
                                  ; *Требуется сохранение регистра статуса так как происходит сравнение внутри подпрограммы
                                  ; *Не требуется запрещение прерываний так как нет общения с периферией
                                  delay:
-00009f b79f                      	in		intvar3,	sreg
-0000a0 939f                      	push	intvar3
+0000fe b79f                      	in		intvar3,	sreg
+0000ff 939f                      	push	intvar3
                                  	
-0000a1 9170 0061                 	lds		intvar1,	RAM_delay_loop1
+000100 9170 0061                 	lds		intvar1,	RAM_delay_loop1
                                  delay_loop1:
-0000a3 9160 0060                 	lds		intvar0,	RAM_delay_loop0
+000102 9160 0060                 	lds		intvar0,	RAM_delay_loop0
                                  delay_loop0:
-0000a5 956a                        	dec		intvar0
-0000a6 3060                      	cpi		intvar0,	0
-0000a7 f7e9                      	brne	delay_loop0
-0000a8 957a                      	dec		intvar1
-0000a9 3071                      	cpi		intvar1,	1
-0000aa f7c1                      	brne	delay_loop1
+000104 956a                        	dec		intvar0
+000105 3060                      	cpi		intvar0,	0
+000106 f7e9                      	brne	delay_loop0
+000107 957a                      	dec		intvar1
+000108 3071                      	cpi		intvar1,	1
+000109 f7c1                      	brne	delay_loop1
                                  
-0000ab 919f                      	pop		intvar3
-0000ac bf9f                      	out		SREG,	intvar3
-0000ad 9508                      	ret
+00010a 919f                      	pop		intvar3
+00010b bf9f                      	out		SREG,	intvar3
+00010c 9508                      	ret
                                  
                                  
                                  ; ***** СЕГМЕНТ EEPROM *****************************************************
@@ -1187,9 +1281,9 @@ counted separately from r26..r31 here.
 "ATmega32" register use summary:
 x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  16 r17:   0 r18:   0 r19:   0 r20:   0 
-r21:   0 r22:  22 r23:  19 r24:   0 r25:   8 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:   3 r31:   3 
+r13:   0 r14:   0 r15:   0 r16:  27 r17:   0 r18:   0 r19:   0 r20:   0 
+r21:   0 r22:  22 r23:  23 r24:   0 r25:   8 r26:   0 r27:   0 r28:   0 
+r29:   0 r30:   9 r31:   9 
 Registers used: 7 out of 35 (20.0%)
 
 "ATmega32" instruction use summary:
@@ -1197,27 +1291,27 @@ Registers used: 7 out of 35 (20.0%)
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   1 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   9 cbi   :   0 cbr   :   0 
+brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  17 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   3 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   3 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :   4 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   3 inc   :   0 jmp   :   4 
-ld    :   0 ldd   :   0 ldi   :  23 lds   :   6 lpm   :   1 lsl   :   0 
+ld    :   0 ldd   :   0 ldi   :  36 lds   :   6 lpm   :   1 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :  19 pop   :   2 
 push  :   2 rcall :   0 ret   :   5 reti  :   0 rjmp  :   0 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   3 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   9 
+sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  21 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
 Instructions used: 18 out of 113 (15.9%)
 
 "ATmega32" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00015c    254     14    268   32768   0.8%
+[.cseg] 0x000000 0x00021a    366     92    458   32768   1.4%
 [.dseg] 0x000060 0x000065      0      5      5    2048   0.2%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
