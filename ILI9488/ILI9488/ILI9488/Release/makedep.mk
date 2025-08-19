@@ -2,25 +2,25 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-ball.cpp
+app\graph.cpp
 
-Drivers\ADC.cpp
+app\ui.cpp
 
-Drivers\Display\ILI9488.cpp
+drivers\display\ILI9488.cpp
 
-Drivers\Display\XPT2046.cpp
+drivers\mcu\ADC.cpp
 
-Drivers\INT.cpp
+drivers\mcu\INT.cpp
 
-Drivers\JTAG.cpp
+drivers\mcu\JTAG.cpp
 
-Drivers\SPI.cpp
+drivers\mcu\SPI.cpp
 
-Drivers\TIM.cpp
+drivers\mcu\TIM.cpp
 
-Drivers\UART.cpp
+drivers\mcu\UART.cpp
+
+drivers\touch\XPT2046.cpp
 
 main.cpp
-
-utils.cpp
 

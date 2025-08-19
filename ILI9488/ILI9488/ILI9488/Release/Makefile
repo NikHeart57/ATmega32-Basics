@@ -33,23 +33,26 @@ LINKER_SCRIPT_DEP:=
 
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
-../Drivers \
-../Drivers/Display
+../drivers \
+../drivers/display \
+../drivers/mcu \
+../drivers/touch \
+../app
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../ball.cpp \
-../Drivers/ADC.cpp \
-../Drivers/Display/ILI9488.cpp \
-../Drivers/Display/XPT2046.cpp \
-../Drivers/INT.cpp \
-../Drivers/JTAG.cpp \
-../Drivers/SPI.cpp \
-../Drivers/TIM.cpp \
-../Drivers/UART.cpp \
-../main.cpp \
-../utils.cpp
+../app/graph.cpp \
+../app/ui.cpp \
+../drivers/display/ILI9488.cpp \
+../drivers/mcu/ADC.cpp \
+../drivers/mcu/INT.cpp \
+../drivers/mcu/JTAG.cpp \
+../drivers/mcu/SPI.cpp \
+../drivers/mcu/TIM.cpp \
+../drivers/mcu/UART.cpp \
+../drivers/touch/XPT2046.cpp \
+../main.cpp
 
 
 PREPROCESSING_SRCS += 
@@ -59,56 +62,56 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-ball.o \
-Drivers/ADC.o \
-Drivers/Display/ILI9488.o \
-Drivers/Display/XPT2046.o \
-Drivers/INT.o \
-Drivers/JTAG.o \
-Drivers/SPI.o \
-Drivers/TIM.o \
-Drivers/UART.o \
-main.o \
-utils.o
+app/graph.o \
+app/ui.o \
+drivers/display/ILI9488.o \
+drivers/mcu/ADC.o \
+drivers/mcu/INT.o \
+drivers/mcu/JTAG.o \
+drivers/mcu/SPI.o \
+drivers/mcu/TIM.o \
+drivers/mcu/UART.o \
+drivers/touch/XPT2046.o \
+main.o
 
 OBJS_AS_ARGS +=  \
-ball.o \
-Drivers/ADC.o \
-Drivers/Display/ILI9488.o \
-Drivers/Display/XPT2046.o \
-Drivers/INT.o \
-Drivers/JTAG.o \
-Drivers/SPI.o \
-Drivers/TIM.o \
-Drivers/UART.o \
-main.o \
-utils.o
+app/graph.o \
+app/ui.o \
+drivers/display/ILI9488.o \
+drivers/mcu/ADC.o \
+drivers/mcu/INT.o \
+drivers/mcu/JTAG.o \
+drivers/mcu/SPI.o \
+drivers/mcu/TIM.o \
+drivers/mcu/UART.o \
+drivers/touch/XPT2046.o \
+main.o
 
 C_DEPS +=  \
-ball.d \
-Drivers/ADC.d \
-Drivers/Display/ILI9488.d \
-Drivers/Display/XPT2046.d \
-Drivers/INT.d \
-Drivers/JTAG.d \
-Drivers/SPI.d \
-Drivers/TIM.d \
-Drivers/UART.d \
-main.d \
-utils.d
+app/graph.d \
+app/ui.d \
+drivers/display/ILI9488.d \
+drivers/mcu/ADC.d \
+drivers/mcu/INT.d \
+drivers/mcu/JTAG.d \
+drivers/mcu/SPI.d \
+drivers/mcu/TIM.d \
+drivers/mcu/UART.d \
+drivers/touch/XPT2046.d \
+main.d
 
 C_DEPS_AS_ARGS +=  \
-ball.d \
-Drivers/ADC.d \
-Drivers/Display/ILI9488.d \
-Drivers/Display/XPT2046.d \
-Drivers/INT.d \
-Drivers/JTAG.d \
-Drivers/SPI.d \
-Drivers/TIM.d \
-Drivers/UART.d \
-main.d \
-utils.d
+app/graph.d \
+app/ui.d \
+drivers/display/ILI9488.d \
+drivers/mcu/ADC.d \
+drivers/mcu/INT.d \
+drivers/mcu/JTAG.d \
+drivers/mcu/SPI.d \
+drivers/mcu/TIM.d \
+drivers/mcu/UART.d \
+drivers/touch/XPT2046.d \
+main.d
 
 OUTPUT_FILE_PATH +=ILI9488.elf
 
@@ -124,63 +127,70 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-./ball.o: .././ball.cpp
+app/graph.o: ../app/graph.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/ADC.o: ../Drivers/ADC.cpp
+app/ui.o: ../app/ui.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/Display/ILI9488.o: ../Drivers/Display/ILI9488.cpp
+drivers/display/ILI9488.o: ../drivers/display/ILI9488.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/Display/XPT2046.o: ../Drivers/Display/XPT2046.cpp
+drivers/mcu/ADC.o: ../drivers/mcu/ADC.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/INT.o: ../Drivers/INT.cpp
+drivers/mcu/INT.o: ../drivers/mcu/INT.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/JTAG.o: ../Drivers/JTAG.cpp
+drivers/mcu/JTAG.o: ../drivers/mcu/JTAG.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/SPI.o: ../Drivers/SPI.cpp
+drivers/mcu/SPI.o: ../drivers/mcu/SPI.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/TIM.o: ../Drivers/TIM.cpp
+drivers/mcu/TIM.o: ../drivers/mcu/TIM.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Drivers/UART.o: ../Drivers/UART.cpp
+drivers/mcu/UART.o: ../drivers/mcu/UART.cpp
+	@echo Building file: $<
+	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+drivers/touch/XPT2046.o: ../drivers/touch/XPT2046.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
@@ -188,13 +198,6 @@ Drivers/UART.o: ../Drivers/UART.cpp
 	
 
 ./main.o: .././main.cpp
-	@echo Building file: $<
-	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
-	@echo Finished building: $<
-	
-
-./utils.o: .././utils.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

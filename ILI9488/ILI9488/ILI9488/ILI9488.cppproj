@@ -153,55 +153,58 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ball.cpp">
+    <Compile Include="app\graph.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\ADC.cpp">
+    <Compile Include="app\ui.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\ADC.h">
+    <Compile Include="drivers\display\ILI9488.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\Display\ILI9488.cpp">
+    <Compile Include="drivers\display\ILI9488.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\Display\ILI9488.h">
+    <Compile Include="drivers\mcu\ADC.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\Display\XPT2046.cpp">
+    <Compile Include="drivers\mcu\ADC.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\Display\XPT2046.h">
+    <Compile Include="drivers\mcu\INT.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\INT.cpp">
+    <Compile Include="drivers\mcu\INT.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\INT.h">
+    <Compile Include="drivers\mcu\JTAG.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\JTAG.cpp">
+    <Compile Include="drivers\mcu\JTAG.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\JTAG.h">
+    <Compile Include="drivers\mcu\SPI.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\SPI.cpp">
+    <Compile Include="drivers\mcu\SPI.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\SPI.h">
+    <Compile Include="drivers\mcu\TIM.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\TIM.cpp">
+    <Compile Include="drivers\mcu\TIM.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\TIM.h">
+    <Compile Include="drivers\mcu\UART.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\UART.cpp">
+    <Compile Include="drivers\mcu\UART.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\UART.h">
+    <Compile Include="drivers\touch\XPT2046.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\touch\XPT2046.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.cpp">
@@ -210,13 +213,13 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="utils.cpp">
-      <SubType>compile</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Drivers" />
-    <Folder Include="Drivers\Display" />
+    <Folder Include="drivers" />
+    <Folder Include="drivers\display" />
+    <Folder Include="drivers\mcu" />
+    <Folder Include="drivers\touch" />
+    <Folder Include="app" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
