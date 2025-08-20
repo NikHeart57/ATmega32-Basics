@@ -31,7 +31,7 @@
  * 
  * @author      Николай Куркин, deepseek
  * @date        2025-08-03
- * @version     1.0
+ * @version     0.9
  * 
  * @copyright   MIT License
  */

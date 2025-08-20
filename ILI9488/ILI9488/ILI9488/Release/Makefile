@@ -33,17 +33,17 @@ LINKER_SCRIPT_DEP:=
 
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
+../app \
 ../drivers \
-../drivers/display \
 ../drivers/mcu \
-../drivers/touch \
-../app
+../drivers/display \
+../drivers/touch
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../app/graph.cpp \
-../app/ui.cpp \
+../app/ball.cpp \
+../app/utils.cpp \
 ../drivers/display/ILI9488.cpp \
 ../drivers/mcu/ADC.cpp \
 ../drivers/mcu/INT.cpp \
@@ -62,8 +62,8 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-app/graph.o \
-app/ui.o \
+app/ball.o \
+app/utils.o \
 drivers/display/ILI9488.o \
 drivers/mcu/ADC.o \
 drivers/mcu/INT.o \
@@ -75,8 +75,8 @@ drivers/touch/XPT2046.o \
 main.o
 
 OBJS_AS_ARGS +=  \
-app/graph.o \
-app/ui.o \
+app/ball.o \
+app/utils.o \
 drivers/display/ILI9488.o \
 drivers/mcu/ADC.o \
 drivers/mcu/INT.o \
@@ -88,8 +88,8 @@ drivers/touch/XPT2046.o \
 main.o
 
 C_DEPS +=  \
-app/graph.d \
-app/ui.d \
+app/ball.d \
+app/utils.d \
 drivers/display/ILI9488.d \
 drivers/mcu/ADC.d \
 drivers/mcu/INT.d \
@@ -101,8 +101,8 @@ drivers/touch/XPT2046.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
-app/graph.d \
-app/ui.d \
+app/ball.d \
+app/utils.d \
 drivers/display/ILI9488.d \
 drivers/mcu/ADC.d \
 drivers/mcu/INT.d \
@@ -127,14 +127,14 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-app/graph.o: ../app/graph.cpp
+app/ball.o: ../app/ball.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-app/ui.o: ../app/ui.cpp
+app/utils.o: ../app/utils.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega32 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega32" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

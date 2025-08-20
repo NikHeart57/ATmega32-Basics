@@ -2,9 +2,9 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-app\graph.cpp
+app\ball.cpp
 
-app\ui.cpp
+app\utils.cpp
 
 drivers\display\ILI9488.cpp
 

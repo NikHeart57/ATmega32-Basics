@@ -1,279 +1,131 @@
-/**
- * @note        ??????????? ???????????? ?????????? deepseek 19.08.25
- *
- * @file        XPT2046.cpp
- * @brief       ?????????? ???????? ???-??????????? XPT2046
- * @details     ???????? ?????????????? ??????? ??? ?????? ? ??????????? ???-???????.
- * 
- * @author      ??????? ??????, deepseek
- * @date        2025-08-19
- * @version     1.0
- * 
- * @copyright   MIT License
- */
-
 #include "XPT2046.h"
 
-#include <avr/io.h>
-#include <util/delay.h>
-#include "../mcu/SPI.h"
-#include "../mcu/INT.h"
-#include "../display/ILI9488.h"
 
-//////////////////////////////////////////////////////////////////////////
-//  ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-//////////////////////////////////////////////////////////////////////////
 
-volatile uint8_t xpt2046_touch_flag = 0;    ///< Флаг касания
-volatile uint16_t xpt2046_touch_x = 0;      ///< Координата X
-volatile uint16_t xpt2046_touch_y = 0;      ///< Координата Y
-
-/**
- * @brief ??????? ????????????? ????????????
- */
-XPT2046_Calibration xpt2046_current_calibration = {
-	XPT2046_CALIB_X_SCALE,
-	XPT2046_CALIB_X_OFFSET,
-	XPT2046_CALIB_Y_SCALE,
-	XPT2046_CALIB_Y_OFFSET
-};
-
-//////////////////////////////////////////////////////////////////////////
-//  ??????? ?????????????
-//////////////////////////////////////////////////////////////////////////
-
-/**
- * @brief ??????? ????????????? ????? ???-???????????
- * @note ??????????? ?????? ???? CS ? IRQ, ??? ??????????
- */
+// Инициализация тач-контроллера
 void XPT2046_Setup(void) 
 {
-    // ????????? ???? CS ??? ??????
-    XPT2046_CS_DDR |= (1 << XPT2046_CS_PIN);
-    
-    // ????????? ???? IRQ ??? ????? (???? ????????????)
-    XPT2046_IRQ_DDR &= ~(1 << XPT2046_IRQ_PIN);
-    XPT2046_IRQ_PORT |= (1 << XPT2046_IRQ_PIN); // Pull-up
-    
-    // ???????????? ???-?????????? (CS ? HIGH)
+	// Настройка пина CS как выхода
+	XPT2046_CS_DDR |= (1 << XPT2046_CS_PIN);
+	
+	// Деактивируем тач-контроллер (CS в HIGH)
 	XPT2046_CS_PORT |= (1 << XPT2046_CS_PIN);
+	
+	// Небольшая задержка для стабилизации
+	_delay_ms(10);
 }
 
-/**
- * @brief Инициализация тач-контроллера с калибровкой и настройкой прерывания
- * @param[in] calib Указатель на структуру калибровки (NULL для значений по умолчанию)
- * @param[in] int_setup_callback Функция настройки прерывания (NULL если прерывание не нужно)
- * @param[in] int_trigger_mode Режим триггера прерывания (если callback указан)
- * 
- * @details Последовательность инициализации:
- * 1. Настройка SPI интерфейса (Mode 0, DIV8, MSB first)
- * 2. Установка калибровочных коэффициентов
- * 3. Настройка прерывания от тачскрина (если требуется)
- * 4. Инициализация аппаратных пинов CS и IRQ
- * 
- * @note Для работы в режиме опроса по прерыванию необходимо:
- * - Установить callback функцию настройки прерывания
- * - Реализовать обработчик прерывания (ISR)
- * - Вызывать XPT2046_ReadCoordinates() в обработчике
- * 
- * @example
- * // В обработчике прерывания:
- * ISR(INT0_vect) {
- *     uint16_t x, y;
- *     if(XPT2046_ReadCoordinates(x, y)) {
- *         // Обработка координат
- *     }
- * }
- */
-void XPT2046_Init(XPT2046_Calibration* calib, XPT2046_IntSetupCallback int_setup_callback, Int_TriggerMode int_trigger_mode)
-{
 
-	// 1. ????????? SPI (??? ??????)
-
-	SPI_Init(SPI_ENABLED, SPI_MASTER, SPI_MODE0, SPI_CLK_DIV8, SPI_MSB_FIRST, SPI_INTERRUPT_ENABLE);
-
-	
-
-	// 2. ????????? ??????????
-
-	XPT2046_SetCalibration(calib);
-
-	
-
-	// 3. ????????? ?????????? (???? callback ???????)
-
-	if (int_setup_callback != NULL) 
-
-	{
-
-		int_setup_callback(INT_ENABLED, int_trigger_mode);
-
-	}
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-//  ??????? ?????? ??????
-//////////////////////////////////////////////////////////////////////////
-
-/**
- * @brief ?????? ????? ?????? ? ???-???????????
- * @param[in] command ??????? ????????? (X, Y, Z1, Z2)
- * @return ????? 12-?????? ???????? (0-4095)
- */
 uint16_t XPT2046_ReadData(uint8_t command) 
 {
-    XPT2046_CS_PORT &= ~(1 << XPT2046_CS_PIN);  // ?????????? CS (?????? ???????)
-    _delay_ms(1); 
-    
-    SPI_SendByte(command);                      // ?????????? ??????? (8 ???)
-    uint8_t high_byte = SPI_ReceiveByte();      // ?????? ??????? 8 ???
-    uint8_t low_byte = SPI_ReceiveByte();       // ?????? ??????? 4 ???? (????????? ??????????)
-    
-    XPT2046_CS_PORT |= (1 << XPT2046_CS_PIN);  // ???????????? CS (??????? ???????)
-    
-    // ?????????? 12 ??? (?????? 4 ???? low_byte - ?????)
-    return ((high_byte << 8) | low_byte) >> 3;
-}
-
-
-/**
- * @brief Чтение откалиброванных координат касания
- * @param[out] x Координата X на экране (0 - SCREEN_WIDTH-1)
- * @param[out] y Координата Y на экране (0 - SCREEN_HEIGHT-1)
- * @return 1 если касание валидно, 0 если нет касания или данные невалидны
- * 
- * @details Алгоритм работы:
- * 1. Сбор 16 samples по X и Y
- * 2. Сортировка и медианная фильтрация (отбрасывание 4 крайних значений)
- * 3. Проверка валидности по аппаратным пределам
- * 4. Преобразование в экранные координаты (0-4095 ? 0-WIDTH/HEIGHT)
- * 5. Применение калибровочных коэффициентов
- * 6. Ограничение координат границами экрана
- * 
- * @warning Функция блокирующая! Время выполнения ~32ms при 16 samples
- * @note Для уменьшения задержки уменьшите XPT2046_SAMPLES и XPT2046_DISCARD
- */
-uint8_t XPT2046_ReadCoordinates(volatile uint16_t &x, volatile uint16_t &y)
-{
-    uint16_t raw_x[XPT2046_SAMPLES];
-    uint16_t raw_y[XPT2046_SAMPLES];
-    
-    // ???? ??????
-    for (uint8_t i = 0; i < XPT2046_SAMPLES; i++)
-    {
-        raw_x[i] = 4096 - XPT2046_ReadData(XPT2046_CMD_X);
-        raw_y[i] = 4096 - XPT2046_ReadData(XPT2046_CMD_Y);
-        _delay_us(100); // ???????? ????????
-    }
-    
-    // ?????????? ???????? ??? ?????????? ???????
-    for (uint8_t i = 0; i < XPT2046_SAMPLES - 1; i++) 
-	{
-        for (uint8_t j = i + 1; j < XPT2046_SAMPLES; j++) 
-        {
-            if (raw_x[i] > raw_x[j]) {
-                uint16_t temp = raw_x[i];
-                raw_x[i] = raw_x[j];
-                raw_x[j] = temp;
-            }
-            if (raw_y[i] > raw_y[j]) 
-            {
-                uint16_t temp = raw_y[i];
-                raw_y[i] = raw_y[j];
-                raw_y[j] = temp;
-            }
-        }
-    }
-    
-    // ?????????? ???????? ??? ????? ??????? ????????
-    uint32_t sum_x = 0, sum_y = 0;
-    for (uint8_t i = XPT2046_DISCARD; i < XPT2046_SAMPLES - XPT2046_DISCARD; i++) 
-    {
-        sum_x += raw_x[i];
-        sum_y += raw_y[i];
-    }
-    
-    uint16_t avg_x = sum_x / (XPT2046_SAMPLES - 2 * XPT2046_DISCARD);
-    uint16_t avg_y = sum_y / (XPT2046_SAMPLES - 2 * XPT2046_DISCARD);
-    
-    // ???????? ?? ?????????? ???????
-    if (avg_x < XPT2046_X_MIN || avg_x > XPT2046_X_MAX || avg_y < XPT2046_Y_MIN || avg_y > XPT2046_Y_MAX) 
-    {
-        x = ILI9488_SCREEN_WIDTH + 1;		// ???????????? ??????????
-        y = ILI9488_SCREEN_HEIGHT + 1;
-        return 0;							// ??????? ?? ???????
-    }
-    
-    // ?????????????? ? ???????? ??????????
-    float real_x = (float)avg_x * (float)ILI9488_SCREEN_WIDTH / 4096.0f;
-    float real_y = (float)avg_y * (float)ILI9488_SCREEN_HEIGHT / 4096.0f;
-    
-    // ?????????? ????????????? ?????????????
-    uint16_t corrected_x = (uint16_t)(real_x * xpt2046_current_calibration.x_scale + xpt2046_current_calibration.x_offset);
-    uint16_t corrected_y = (uint16_t)(real_y * xpt2046_current_calibration.y_scale + xpt2046_current_calibration.y_offset);
-    
-    // ??????????? ?????????
-    x = (corrected_x >= ILI9488_SCREEN_WIDTH) ? ILI9488_SCREEN_WIDTH - 1 : corrected_x;
-    y = (corrected_y >= ILI9488_SCREEN_HEIGHT) ? ILI9488_SCREEN_HEIGHT - 1 : corrected_y;
-    
-    return 1; // ??????? ???????
-}
-
-/**
- * @brief ???????? ??????? ???????
- * @return 1 ???? ???? ???????, 0 ???? ???
- * @note ?????? ????????? ???? IRQ
- */
-uint8_t XPT2046_IsTouched(void)
-{
-    // IRQ pin ??????? ? LOW ????????? ??? ???????
-    return !(XPT2046_IRQ_PINREG & (1 << XPT2046_IRQ_PIN));
-}
-
-/**
- * @brief ????????? ????????????? ?????????????
- * @param[in] calib ????????? ?? ????????? ??????????
- */
-
-void XPT2046_SetCalibration(XPT2046_Calibration* calib)
-
-{
-    if (calib != NULL) {
-        xpt2046_current_calibration.x_scale = calib->x_scale;
-        xpt2046_current_calibration.x_offset = calib->x_offset;
-        xpt2046_current_calibration.y_scale = calib->y_scale;
-        xpt2046_current_calibration.y_offset = calib->y_offset;
-    }
-}
-
-
-
-
-
-
-
-
-/**
- * @brief Чтение значения давления (Z)
- * @return Значение давления (0-4095)
- */
-uint16_t XPT2046_ReadPressure(void)
-{
-    uint16_t z1 = XPT2046_ReadData(XPT2046_CMD_Z1);
-    uint16_t z2 = XPT2046_ReadData(XPT2046_CMD_Z2);
-    
-    // Проверка на корректность значений АЦП
-    if(z1 > 4095 || z2 > 4095) 
-	{
-	    return 0; // Некорректные данные
-    }
-    
-    uint16_t pressure = (uint16_t)z1 + 4095 - z2;
+	XPT2046_CS_PORT &= ~(1 << XPT2046_CS_PIN);  // Активируем CS (низкий уровень)
+	_delay_ms(1); 
 	
-	  // Дополнительная проверка
-	  if(pressure > 4095) return 0;
-	  
-	  return pressure;
+	SPI_SendByte(command);						// Отправляем команду (8 бит)
+	uint8_t high_byte = SPI_ReceiveByte();  // Читаем старшие 8 бит
+	uint8_t low_byte = SPI_ReceiveByte();   // Читаем младшие 4 бита (остальные игнорируем)
+	
+	XPT2046_CS_PORT |= (1 << XPT2046_CS_PIN);  // Деактивируем CS (высокий уровень)
+	
+	// Объединяем 12 бит (первые 4 бита low_byte - мусор)
+	return ((high_byte << 8) | low_byte) >> 3;
 }
+
+
+void XPT2046_ReadCoordinates(uint16_t &x, uint16_t &y)
+{
+	const uint8_t samples = 16; // Увеличиваем количество выборок для лучшей фильтрации 16
+	const uint8_t discard = 4;  // Количество минимальных и максимальных значений для отбрасывания 4
+	
+	uint16_t raw_x[samples];
+	uint16_t raw_y[samples];
+	
+	// Сбор данных
+	for (uint8_t i = 0; i < samples; i++)
+	{
+		raw_x[i] = 4096 - XPT2046_ReadData(XPT2046_CMD_X);
+		raw_y[i] = 4096 - XPT2046_ReadData(XPT2046_CMD_Y);
+		_delay_ms(1); // Короткая задержка вместо 1 мс
+	}
+	
+	// Сортировка массивов для медианного фильтра
+	for (uint8_t i = 0; i < samples-1; i++) {
+		for (uint8_t j = i+1; j < samples; j++) 
+		{
+			if (raw_x[i] > raw_x[j]) {
+				uint16_t temp = raw_x[i];
+				raw_x[i] = raw_x[j];
+				raw_x[j] = temp;
+			}
+			if (raw_y[i] > raw_y[j]) 
+			{
+				uint16_t temp = raw_y[i];
+				raw_y[i] = raw_y[j];
+				raw_y[j] = temp;
+			}
+		}
+	}
+	
+	// Вычисление среднего без учета discard минимальных и максимальных значений
+	uint32_t sum_x = 0, sum_y = 0;
+	for (uint8_t i = discard; i < samples-discard; i++) 
+	{
+		sum_x += raw_x[i];
+		sum_y += raw_y[i];
+	}
+	
+	uint16_t avg_x = sum_x / (samples - 2*discard);
+	uint16_t avg_y = sum_y / (samples - 2*discard);
+	
+	// Проверка на валидность (если сенсор не касается)
+	/*
+	if (avg_x < 100 || avg_x > 3900 || avg_y < 100 || avg_y > 3900) 
+	{
+		x = SCREEN_WIDTH + 1; // Некорректные координаты
+		y = SCREEN_HEIGHT + 1;
+		return;
+	}
+	*/
+	
+	// Преобразование в экранные координаты с калибровкой
+	float real_x = (float)avg_x * (float)ILI9488_SCREEN_WIDTH / 4096.0f;
+	float real_y = (float)avg_y * (float)ILI9488_SCREEN_HEIGHT / 4096.0f;
+	
+	// Применение калибровочных коэффициентов (подберите свои значения)
+	uint16_t corrected_x = (uint16_t)(real_x * 1.097f - 19.6f);
+	uint16_t corrected_y = (uint16_t)(real_y * 1.12f - 21.56f);
+	
+	// Ограничение координат
+	x = (corrected_x >= ILI9488_SCREEN_WIDTH) ? ILI9488_SCREEN_WIDTH-1 : corrected_x;
+	y = (corrected_y >= ILI9488_SCREEN_HEIGHT) ? ILI9488_SCREEN_HEIGHT-1 : corrected_y;
+}
+
+
+
+/*
+// Чтение данных с тач-контроллера
+uint16_t XPT2046_ReadData(uint8_t command) 
+{
+	// Активируем тач-контроллер (CS в LOW)
+	XPT2046_CS_PORT &= ~(1 << XPT2046_CS_PIN);
+		
+		
+		
+	// Отправляем команду и читаем результат (12 бит)
+	uint16_t data = SPI_TransferByte(command) << 8;
+	data |= SPI_TransferByte(0x00);
+	
+	
+	
+	// Деактивируем тач-контроллер (CS в HIGH)
+	XPT2046_CS_PORT |= (1 << XPT2046_CS_PIN);
+	
+	// Результат 12 бит, выравниваем
+	//return (data >> 3) & 0xFFF;
+	return data >> 3;
+}
+*/
+
+
+
 

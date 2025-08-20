@@ -153,10 +153,10 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="app\graph.cpp">
+    <Compile Include="app\ball.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="app\ui.cpp">
+    <Compile Include="app\utils.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="drivers\display\ILI9488.cpp">
@@ -215,11 +215,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="drivers" />
-    <Folder Include="drivers\display" />
-    <Folder Include="drivers\mcu" />
-    <Folder Include="drivers\touch" />
     <Folder Include="app" />
+    <Folder Include="drivers" />
+    <Folder Include="drivers\mcu" />
+    <Folder Include="drivers\display" />
+    <Folder Include="drivers\touch" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

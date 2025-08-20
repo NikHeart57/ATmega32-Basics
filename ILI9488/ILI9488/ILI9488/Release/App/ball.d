@@ -1,4 +1,4 @@
-main.d main.o: .././main.cpp .././main.h \
+app/ball.d app/ball.o: ../app/ball.cpp ../app/../main.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -20,11 +20,12 @@ main.d main.o: .././main.cpp .././main.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
- .././drivers/mcu/JTAG.h .././drivers/mcu/ADC.h .././drivers/mcu/UART.h \
- .././drivers/mcu/SPI.h .././drivers/mcu/INT.h .././drivers/mcu/TIM.h \
- .././drivers/display/ILI9488.h .././drivers/touch/XPT2046.h
+ ../app/../drivers/mcu/JTAG.h ../app/../drivers/mcu/ADC.h \
+ ../app/../drivers/mcu/UART.h ../app/../drivers/mcu/SPI.h \
+ ../app/../drivers/mcu/INT.h ../app/../drivers/mcu/TIM.h \
+ ../app/../drivers/display/ILI9488.h ../app/../drivers/touch/XPT2046.h
 
-.././main.h:
+../app/../main.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -68,18 +69,18 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h:
 
-.././drivers/mcu/JTAG.h:
+../app/../drivers/mcu/JTAG.h:
 
-.././drivers/mcu/ADC.h:
+../app/../drivers/mcu/ADC.h:
 
-.././drivers/mcu/UART.h:
+../app/../drivers/mcu/UART.h:
 
-.././drivers/mcu/SPI.h:
+../app/../drivers/mcu/SPI.h:
 
-.././drivers/mcu/INT.h:
+../app/../drivers/mcu/INT.h:
 
-.././drivers/mcu/TIM.h:
+../app/../drivers/mcu/TIM.h:
 
-.././drivers/display/ILI9488.h:
+../app/../drivers/display/ILI9488.h:
 
-.././drivers/touch/XPT2046.h:
+../app/../drivers/touch/XPT2046.h:
